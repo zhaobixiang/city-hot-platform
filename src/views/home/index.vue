@@ -71,8 +71,7 @@
 
     <div class="home-title">碧水兰庭 1号楼</div>
 
-    <div class="home-floor1">
-        <!-- <img :src="floorImg" />
+    <!-- <div class="home-floor1">
         <img :src="floorImg" />
         <img :src="floorImg" />
         <img :src="floorImg" />
@@ -81,10 +80,11 @@
         <img :src="floorImg" />
         <img :src="floorImg" />
         <img :src="floorImg" />
-        <img :src="floorImg" /> -->
+        <img :src="floorImg" />
+        <img :src="floorImg" />
+    </div> -->
 
-        <floor-box v-for="item in 10" :key="item" :title="`${item}号楼`" />
-    </div>
+    <floor-base :count="10" />
 
     <div class="home-house">
         <div class="home-house-top">
@@ -157,7 +157,7 @@
 <script setup>
 import { ref } from 'vue';
 import House from '@/components/house.vue';
-import FloorBox from '@/components/floor.vue';
+import FloorBase from '@/components/floor-base.vue';
 
 import bgImg from "@/assets/bg.png";
 import backImg from "@/assets/back.png";
@@ -427,16 +427,43 @@ const floorNum = ref(4);
 
   &-floor1 {
     position: absolute;
-    bottom: 500px;
+    bottom: 50px;
     left: calc(50% - 50px);
-    // transform-style: preserve-3d;
+    transform-style: preserve-3d;
 
     width: 129px;
     height: 122px;
 
     :deep(.floor) {
         &:nth-child(1) {
-            transform: rotateY(30deg) translateZ(300px);
+            transform: translateX(0) translateY(0);
+        }
+        &:nth-child(2) {
+            transform: translateX(280px) translateY(-64px);
+        }
+        &:nth-child(3) {
+            transform: translateX(560px) translateY(-128px);
+        }
+        &:nth-child(4) {
+            transform: translateX(560px) translateY(-192px);
+        }
+        &:nth-child(5) {
+            transform: translateX(280px) translateY(-256px);
+        }
+        &:nth-child(6) {
+            transform: translateX(0) translateY(-320px);
+        }
+        &:nth-child(7) {
+            transform: translateX(-280px) translateY(-256px);
+        }
+        &:nth-child(8) {
+            transform: translateX(-560px) translateY(-192px);
+        }
+        &:nth-child(9) {
+            transform: translateX(-560px) translateY(-128px);
+        }
+        &:nth-child(10) {
+            transform: translateX(-280px) translateY(-64px);
         }
     }
   }
@@ -446,6 +473,8 @@ const floorNum = ref(4);
 
     left: 30%;
     bottom: 230px;
+
+    display: none;
 
     &-top {
         border: 5px solid #000;
