@@ -1,11 +1,11 @@
 <template>
     <div class="floor-base">
-        <floor class="floor-base-item" v-for="v in count" :key="v" :title="`${v}号楼`" :style="floorStyleList[v - 1]" />
+        <floor class="floor-base-item" v-for="v in count" :key="v" :title="`${v}号楼`" :style="styleList[v - 1]" @click="onClick(v)" />
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import Floor from './floor.vue';
 
 const props = defineProps({
@@ -15,60 +15,92 @@ const props = defineProps({
     }
 });
 
-const floorStyleList = computed(() => {
-    const count = props.count;
-    const mid = count / 2;
+const emit = defineEmits(['change']);
 
-    const w = 1400 / mid;
-    const h = 320 / mid;
+const current = ref(1);
+const degList = ref([]);
+
+const styleList = computed(() => {
+    return degList.value.map(v => {
+        return {
+            transform: `rotateY(${v}deg) translateZ(700px) rotateY(${-v}deg)`
+        }
+    });
+});
+
+const setDegList = (v) => {
+    const num = v ?? props.count;
+    const deg = 360 / num;
 
     let res = [];
-    let list = [];
-    let t = 1;
 
-    for (let i = 0; i < count; i++) {
-        let x, y;
-
-        x = w * i;
-        y = -190 * i;
-
-        if (x > 700) {
-            x = w * (i - t);
-            t += 2;
-        }
-
-        if (i >= mid) {
-            x = -list[i - mid];
-            y = -190 * (2 * mid - i);
-        }
-
-        list[i] = x;
-
-        res[i] = {
-            transform: `translateX(${x}px) translateY(${y}px)`
-        };
+    for (let i = 0; i < num; i++) {
+        res[i] = Math.round(i * deg);
     }
 
-    console.log(res)
+    // console.log(res)
 
-    return res;
+    degList.value = res;
+}
+
+const onClick = (v) => {
+    console.log(v);
+    const num = props.count;
+    const deg = 360 / num;
+    const size = v >= current.value ? v - current.value : (num + v - current.value);
+    const list = degList.value;
+    const len = list.length;
+    let res = [];
+
+    for (let i = 0; i < len; i++) {
+        if (size > num / 2) {
+            res[i] = list[i] + Math.round(deg * (num - size));
+        } else {
+            res[i] = list[i] - Math.round(deg * size);
+        }
+    }
+
+    current.value = v;
+    degList.value = res;
+
+    emit('change', v);
+}
+
+watch(() => props.count, (v) => {
+    setDegList(v);
+}, {
+    immediate: true
+});
+
+defineExpose({
+    go: onClick
 });
 </script>
 
 <style lang="scss" scoped>
 .floor-base {
     position: absolute;
-    bottom: 50px;
+    bottom: 200px;
     left: calc(50% - 50px);
-    transform-style: preserve-3d;
-
     width: 129px;
     height: 122px;
+    transform: rotateX(-10deg);
+    transform-style: preserve-3d;
 
-    // &-item {
-    //     &:nth-child(1) {
-    //         transform: translateX(0) translateY(0);
-    //     }
-    // }
+    &-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: transform 1s ease-in-out;
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotateY(0);
+    }
+    100% {
+        transform: rotateY(360deg);
+    }
 }
 </style>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no,maximum-scale=1.0,minimum-scale=1.0"
+    />
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>CSS3 3D 旋转木马示例</title>
+
+    <style>
+      body {
+        /* 设置透视视图效果 , 近大远小 */
+        perspective: 5000px;
+      }
+      section {
+        /* 相对定位 */
+        position: relative;
+        width: 300px;
+        height: 200px;
+        /* 整体 上下 150 像素边距 , 水平居中对齐 */
+        margin: 150px auto;
+        /* 设置 3D 呈现效果 , 子盒子可设置 3D 效果 */
+        transform-style: preserve-3d;
+        /* 添加动画效果 , 控件 匀速旋转 每 10 秒旋转一圈 无限循环      
+       animation: rotate 10s linear infinite;   */
+        background: red;
+
+        transform: rotateX(-30deg);
+      }
+      section:hover {
+        /* 鼠标 移动到 section 盒子模型上方 , 旋转动画停止 */
+        animation-play-state: paused;
+      }
+      @keyframes rotate {
+        /* 定义动画 , 名称是 rotate , 该动画绕着 Y 轴旋转 360 度 */
+        0% {
+          transform: rotateY(0);
+        }
+        100% {
+          transform: rotateY(360deg);
+        }
+      }
+      section div {
+        /* 绝对定位 , 子绝父相 , 其父容器必须是相对布局 */
+        position: absolute; /* 左上角定位在父容器 0,0 位置 */
+        top: 0;
+        left: 0; /* 宽高充满父盒子 */
+        width: 100%;
+        height: 100%; /* 设置文字大小 */
+        font-size: 60px; /* 设置文字颜色 */
+        color: #fff; /* 设置文字在盒子中水平对齐 */
+        text-align: center; /* 设置文字在盒子中垂直对齐 */
+        line-height: 200px;
+      }
+      section div:nth-child(1) {
+        /* 第 1 个盒子不需要旋转 , 向屏幕方向移动 300 像素 */
+        transform: rotateY(0) translateZ(300px);
+        background: blue;
+      }
+      section div:nth-child(2) {
+        /* 第 2 个盒子 先旋转 60 度 , 然后再向屏幕方向移动 300 像素 */
+        transform: rotateY(60deg) translateZ(300px);
+        background: purple;
+      }
+      section div:nth-child(3) {
+        /* 第 3 个盒子 先旋转 120 度 , 然后再向屏幕方向移动 300 像素 */
+        transform: rotateY(120deg) translateZ(300px);
+        background: green;
+      }
+      section div:nth-child(4) {
+        /* 第 4 个盒子 先旋转 180 度 , 然后再向屏幕方向移动 300 像素 */
+        transform: rotateY(180deg) translateZ(300px);
+        background: magenta;
+      }
+      section div:nth-child(5) {
+        /* 第 5 个盒子 先旋转 240 度 , 然后再向屏幕方向移动 300 像素 */
+        transform: rotateY(240deg) translateZ(300px);
+        background: pink;
+      }
+      section div:nth-child(6) {
+        /* 第 3 个盒子 先旋转 300 度 , 然后再向屏幕方向移动 300 像素 */
+        transform: rotateY(300deg) translateZ(300px);
+        background: cyan;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <div>1</div>
+
+      <div>
+        <img src="./src/assets/1.jpg" />
+      </div>
+
+      <div>3</div>
+
+      <div>4</div>
+
+      <div>5</div>
+
+      <div>6</div>
+    </section>
+  </body>
+</html>
