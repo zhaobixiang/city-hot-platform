@@ -14,12 +14,12 @@
     </div>
 
     <div class="standard-main">
-        <div class="standard-box" v-for="i in 3" :key="i"> 
+        <div class="standard-box" v-for="i in 5" :key="i"> 
             <div class="standard-box-header">
                 1单元
             </div>
             <div class="standard-box-main">
-                <house-card class="standard-box-main-card" v-for="v in 10" :key="v" />
+                <house-card class="standard-box-main-card" v-for="v in 10" :key="v" :type="0" />
             </div>
             <div class="standard-box-bg">
                 <div></div>
@@ -86,6 +86,9 @@ import arrowRImg from "@/assets/arrowrs.png";
         padding: 0 80px;
         display: flex;
         justify-content: center;
+        // display: grid;
+        // grid-template-columns: repeat(3, 1fr);
+        // gap: 20px;
     }
 
     &-box {

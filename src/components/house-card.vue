@@ -1,5 +1,5 @@
 <template>
-  <div class="house">
+  <div class="house" :class="houseCls">
     <div class="house-header">
       <img :src="icon1Img" />
       <img :src="icon2Img" />
@@ -24,7 +24,7 @@
         <div class="house-main-top-right">
           <div>1601室</div>
           <div>145㎡</div>
-          <img :src="house1Img" />
+          <img :src="houseImg" />
         </div>
       </div>
       <div class="house-main-info">
@@ -44,13 +44,14 @@
       </div>
       <div class="house-main-bottom">
         <div class="house-main-bottom-text">阀门开度  86%</div>
-        <img :src="progress1Img" />
+        <img :src="progressImg" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { computed, ref } from 'vue';
 import icon1Img from "@/assets/c-icon1.png";
 import icon2Img from "@/assets/c-icon2.png";
 import icon3Img from "@/assets/c-icon3.png";
@@ -59,7 +60,34 @@ import icon5Img from "@/assets/c-icon5.png";
 import icon6Img from "@/assets/c-icon6.png";
 
 import house1Img from "@/assets/house1.png";
+import house2Img from "@/assets/house2.png";
+import house3Img from "@/assets/house3.png";
+import house4Img from "@/assets/house4.png";
+
 import progress1Img from "@/assets/progress1.png";
+import progress2Img from "@/assets/progress2.png";
+import progress3Img from "@/assets/progress3.png";
+import progress4Img from "@/assets/progress4.png";
+
+const props = defineProps({
+  type: {
+    type: Number,
+    default: 0
+  }
+})
+
+const houseCls = computed(() => {
+  return ['', 'grey', 'blue', 'red'][props.type];
+});
+
+const houseImg = computed(() => {
+  return [house1Img, house2Img, house3Img, house4Img][props.type];
+});
+
+const progressImg = computed(() => {
+  return [progress1Img, progress2Img, progress3Img, progress4Img][props.type];
+});
+
 </script>
 
 <style lang="scss" scoped>
@@ -70,6 +98,16 @@ import progress1Img from "@/assets/progress1.png";
   background-size: 100% 100%;
   display: flex;
   flex-direction: column;
+
+  &.grey {
+    background: url('@/assets/card2.png') no-repeat;
+  }
+  &.blue {
+    background: url('@/assets/card3.png') no-repeat;
+  }
+  &.red {
+    background: url('@/assets/card4.png') no-repeat;
+  }
 
   &-header {
     height: 40px;
@@ -179,9 +217,9 @@ import progress1Img from "@/assets/progress1.png";
       display: flex;
       width: 180px;
       height: 16px;
-      margin: 16px 10px 0;
+      margin: 16px 0 0 14px;
       font-size: 12px;
-      background-color: #13a0ad;
+      background-color: #5e6161;
       border-radius: 10px;
 
       &-text {

@@ -19,8 +19,9 @@
             </div>
         </div>
         <div class="all-house-body">
-            <div class="all-house-unit" v-for="unit in unitNum" :key="unit">
-                <div class="all-house-layer" v-for="layer in layerNum" :key="layer">
+            <div class="all-house-unit" v-for="(unit, uIndex) in unitNum" :key="unit">
+                <div class="all-house-layer" v-for="(layer, lIndex) in layerNum" :key="layer">
+                    <div class="all-house-number" v-if="!uIndex">{{ 9 - lIndex }}F</div>
                     <div class="all-house-floor" v-for="floor in doorNum" :key="floor">
                         <house :width="58" :height="46" :color="unit === 2 && layer === 5 && floor === 3 ? '#a13e19' : unit === 3 && layer === 2 && floor === 1 ? '#1962b4' : unit === 1 && layer === 7 && floor === 2 ? '#ccc' : '#1f98a4'" />
                         <!-- <house :width="58" :height="46" color="#1962b4" /> -->
@@ -306,8 +307,16 @@ const onNext = () => {
 
         &-layer {
             display: flex;
-            
+            position: relative;
             border-bottom: 5px solid #000;
+        }
+
+        &-number {
+            font-size: 14px;
+            color: #fff;
+            position: absolute;
+            bottom: 5px;
+            left: -50px;
         }
 
         &-floor {
