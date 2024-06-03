@@ -3,30 +3,34 @@
     <mode-box mode="standard" />
     <div class="standard-title">碧水兰庭</div>
 
-    <div class="standard-arrow left">
+    <div class="standard-arrow left" @click="onPrev">
         <img :src="arrowRImg" />
         更多
     </div>
 
-    <div class="standard-arrow right">
+    <div class="standard-arrow right" @click="onNext">
         <img :src="arrowLImg" />
         更多
     </div>
 
     <div class="standard-main">
-        <div class="standard-box" v-for="i in 5" :key="i"> 
-            <div class="standard-box-header">
-                1单元
-            </div>
-            <div class="standard-box-main">
-                <house-card class="standard-box-main-card" v-for="v in 10" :key="v" :type="0" />
-            </div>
-            <div class="standard-box-bg">
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-        </div>
+        <el-carousel ref="carousel" height="calc(100vh - 170px)" :autoplay="false" indicator-position="none">
+            <el-carousel-item v-for="item in 3" :key="item">
+                <div class="standard-box" v-for="i in 3" :key="i"> 
+                    <div class="standard-box-header">
+                        {{ item }}单元
+                    </div>
+                    <div class="standard-box-main">
+                        <house-card class="standard-box-main-card" v-for="v in 10" :key="v" :type="0" />
+                    </div>
+                    <div class="standard-box-bg">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </el-carousel-item>
+        </el-carousel>
     </div>
     
   </div>
@@ -40,6 +44,15 @@ import houseCard from '@/components/house-card.vue';
 import arrowLImg from "@/assets/arrowls.png";
 import arrowRImg from "@/assets/arrowrs.png";
 
+const carousel = ref();
+
+const onPrev = () => {
+    carousel.value.prev();
+}
+
+const onNext = () => {
+    carousel.value.next();
+}
 </script>
 
 <style lang="scss" scoped>
@@ -84,11 +97,17 @@ import arrowRImg from "@/assets/arrowrs.png";
 
     &-main {
         padding: 0 80px;
-        display: flex;
-        justify-content: center;
+        // display: flex;
+        // justify-content: center;
+
         // display: grid;
         // grid-template-columns: repeat(3, 1fr);
         // gap: 20px;
+ 
+        :deep(.el-carousel__item) {
+            display: flex;
+            justify-content: center;
+        }
     }
 
     &-box {
