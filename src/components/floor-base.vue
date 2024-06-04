@@ -12,12 +12,16 @@ const props = defineProps({
     count: {
         type: Number,
         default: 10
+    },
+    floor: {
+        type: Number,
+        default: 1
     }
 });
 
-const emit = defineEmits(['change']);
+const emit = defineEmits(['change-floor']);
 
-const current = ref(1);
+const current = ref(props.floor);
 const degList = ref([]);
 
 const styleList = computed(() => {
@@ -38,16 +42,14 @@ const setDegList = (v) => {
         res[i] = Math.round(i * deg);
     }
 
-    // console.log(res)
-
     degList.value = res;
 }
 
-const onClick = (v) => {
-    console.log(v);
+const onClick = (v, prev) => {
+    const last = prev ?? props.floor;
     const num = props.count;
     const deg = 360 / num;
-    const size = v >= current.value ? v - current.value : (num + v - current.value);
+    const size = v >= last ? v - last : (num + v - last);
     const list = degList.value;
     const len = list.length;
     let res = [];
@@ -63,8 +65,14 @@ const onClick = (v) => {
     current.value = v;
     degList.value = res;
 
-    emit('change', v);
+    emit('change-floor', v);
 }
+
+watch(() => props.floor, (v, ov) => {
+    if (current.value !== v) {
+        onClick(v, ov);
+    }
+});
 
 watch(() => props.count, (v) => {
     setDegList(v);

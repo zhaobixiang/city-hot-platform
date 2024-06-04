@@ -72,9 +72,10 @@ import { ref, onMounted } from 'vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import eyeImg from '@/assets/eye.png';
-import marker1 from '@/assets/marker1.png';
 
 const showDialog = ref(true);
+
+
 
 onMounted(() => {
     window._AMapSecurityConfig = {
@@ -91,49 +92,19 @@ onMounted(() => {
             zooms: [16, 20],
         });
 
-        // [
-        //     [102.637337, 37.947473],
-        //     [102.6641608, 37.947495],
-        //     [102.641945, 37.945058],
-        //     [102.637764, 37.944807],
-        // ]
-
-        const areas = [{
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.637925, 37.945016],
-                [102.639045, 37.945123],
-                [102.639072, 37.944965],
-                [102.637977, 37.944821],
-            ],
-            textPoint: [102.637925, 37.945126],
-            dotList: [
-                [102.637925, 37.945166],
-                [102.638225, 37.945186],
-                [102.638625, 37.945246],
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '84aed9', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.637733,37.945333],
-                [102.638514,37.945429],
-                [102.638527,37.945274],
-                [102.637764,37.945181],
-            ],
-            textPoint: [102.637563,37.945652],
-            dotList: [
-                [102.637403,37.945652],
-                [102.637903,37.945722],
-            ],
-        }];
-
         buildingLayer.setStyle({
-            hideWithoutStyle: true,
-            areas
+            hideWithoutStyle: false,
+            areas: [{
+                rejectTexture: true,
+                color1: '69ada0', //顶面
+                color2: '4c4c4c', 
+                path: [
+                    [102.637337, 37.947473],
+                    [102.6641608, 37.947495],
+                    [102.641945, 37.945058],
+                    [102.637764, 37.944807],
+                ]
+            }]
         });
 
         var canvas = document.createElement('canvas');
@@ -177,144 +148,12 @@ onMounted(() => {
                 canvasLayer
             ]
         });
-
-        // var text = new AMap.Text({
-        //     text: '1栋1单元 26.7℃',
-        //     // anchor: 'center', // 设置文本标记锚点
-        //     // draggable:true,
-        //     // cursor:'pointer',
-        //     angle: -6,
-        //     style:{
-        //         // 'padding': '.75rem 1.25rem',
-        //         // 'margin-bottom': '1rem',
-        //         // 'border-radius': '.25rem',
-        //         'background-color': 'transparent',
-        //         // 'width': '15rem',
-        //         'border-width': 0,
-        //         // 'box-shadow': '0 2px 6px 0 rgba(114, 124, 245, .5)',
-        //         // 'text-align': 'center',
-        //         'font-size': '20px',
-        //         'color': '#4c4c4c'
-        //     },
-        //     position: [102.637925, 37.945126]
-        //     // position: [102.637925, 37.945016]
-        // });
-
-        // var marker = new AMap.Marker({
-        //     position: new AMap.LngLat(102.637925, 37.945166),
-        //     content: `<div class="floor-marker">
-        //         <div class="floor-marker-box">
-        //             <div class="floor-marker-box-item">单元号: 2103</div>
-        //             <div class="floor-marker-box-item">阀位: 52%</div>
-        //             <div class="floor-marker-box-item">回温: 37.9℃</div>
-        //             <div class="floor-marker-box-item">流量: 60.4t/h</div>
-        //         </div>
-        //         <div class="floor-marker-dot"></div>
-        //         <div class="floor-marker-line"></div>
-        //         <img class="floor-marker-img" src=${marker1} />
-        //     </div>`,
-        //     offset: new AMap.Pixel(0, -140)
-        // });
-
-        // map.add(marker)
-
-        // text.setMap(map);
-
-        createMarkerText(AMap, map, areas);
     }).catch(e => {
         console.log(e)
     });
 });
-
-const createMarkerText = (AMap, map, areas) => {
-    areas.forEach(item => {
-        var text = new AMap.Text({
-            text: '1栋1单元 26.7℃',
-            // anchor: 'center', // 设置文本标记锚点
-            // draggable:true,
-            // cursor:'pointer',
-            angle: -6,
-            style:{
-                // 'padding': '.75rem 1.25rem',
-                // 'margin-bottom': '1rem',
-                // 'border-radius': '.25rem',
-                'background-color': 'transparent',
-                // 'width': '15rem',
-                'border-width': 0,
-                // 'box-shadow': '0 2px 6px 0 rgba(114, 124, 245, .5)',
-                // 'text-align': 'center',
-                'font-size': '20px',
-                'color': '#4c4c4c'
-            },
-            position: item.textPoint,
-            // position: [102.637925, 37.945126]
-            // position: [102.637925, 37.945016]
-        });
-
-        item.dotList.forEach(dot => {
-            var marker = new AMap.Marker({
-                // position: new AMap.LngLat(102.637925, 37.945126),
-                position: new AMap.LngLat(...dot),
-                content: `<div class="floor-marker">
-                    <div class="floor-marker-box">
-                        <div class="floor-marker-box-item">单元号: 2103</div>
-                        <div class="floor-marker-box-item">阀位: 52%</div>
-                        <div class="floor-marker-box-item">回温: 37.9℃</div>
-                        <div class="floor-marker-box-item">流量: 60.4t/h</div>
-                    </div>
-                    <div class="floor-marker-dot"></div>
-                    <div class="floor-marker-line"></div>
-                    <img class="floor-marker-img" src=${marker1} />
-                </div>`,
-                offset: new AMap.Pixel(0, -140)
-            });
-
-            map.add(marker);
-        });
-
-        
-        text.setMap(map);
-    });
-}
 </script>
 
-<style lang="scss">
-.floor-marker {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    &-box {
-        min-width: 80px;
-        padding: 6px 10px;
-        height: 80px;
-        border: 1px solid #999;
-        border-radius: 10px;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: #fff;
-        font-size: 12px;
-
-        &-item {
-            line-height: 20px;
-        }
-    }
-
-    &-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: #24e0bb;
-        margin-top: -5px;
-    }
-    
-    &-line {
-        width: 1px;
-        height: 30px;
-        background-color: #3f7a6f;
-    }
-}
-</style>
 <style lang="scss" scoped>
 .home {
     width: 100%;

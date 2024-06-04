@@ -7,7 +7,7 @@
     <mode-box />
 
     <div class="all-house">
-        <div class="all-house-title">碧水兰庭 {{ current }}号楼</div>
+        <div class="all-house-title">碧水兰庭 {{ floor }}号楼</div>
         <div class="all-house-top">
             <div></div>
             <div></div>
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <floor-base ref="floorBase" :count="floorNum" @change="onChangeFloor" />
+    <floor-base ref="floorBase" :floor="floor" :count="floorNum" @change-floor="changeFloor" />
 
     <div>
         <div class="all-info left">
@@ -91,10 +91,14 @@ const props = defineProps({
     data: {
         type: Object,
         default: () =>({})
+    },
+    floor: {
+        type: Number,
+        default: 1
     }
-})
+});
+const emit = defineEmits(['change-floor']);
 
-const current = ref(1);
 const floorBase = ref();
 
 // 楼数
@@ -114,19 +118,21 @@ const doorNum = computed(() => {
     return props.door ?? 4;
 });
 
-const onChangeFloor = (v) => {
-    current.value = v;
+const changeFloor = (v) => {
+    emit('change-floor', v);
 }
 
 const onPrev = () => {
-    const v = current.value === 1 ? floorNum.value : current.value - 1;
+    const v = props.floor === 1 ? floorNum.value : props.floor - 1;
 
+    changeFloor(v);
     floorBase.value.go(v);
 }
 
 const onNext = () => {
-    const v = current.value === floorNum.value ? 1 : current.value + 1;
+    const v = props.floor === floorNum.value ? 1 : props.floor + 1;
 
+    changeFloor(v);
     floorBase.value.go(v);
 }
 

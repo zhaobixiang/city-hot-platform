@@ -68,13 +68,15 @@
 </template>
 
 <script setup>
+// import * as THREE from 'three';
 import { ref, onMounted } from 'vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import eyeImg from '@/assets/eye.png';
-import marker1 from '@/assets/marker1.png';
 
 const showDialog = ref(true);
+
+
 
 onMounted(() => {
     window._AMapSecurityConfig = {
@@ -87,53 +89,26 @@ onMounted(() => {
         plugins: []
     }).then((AMap) => {
         const buildingLayer = new AMap.Buildings({
-            zIndex: 130,
+            // zIndex: 130,
+            zIndex: 10,
             zooms: [16, 20],
+            // visible: false,
+            // opacity: 0,
         });
-
-        // [
-        //     [102.637337, 37.947473],
-        //     [102.6641608, 37.947495],
-        //     [102.641945, 37.945058],
-        //     [102.637764, 37.944807],
-        // ]
-
-        const areas = [{
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.637925, 37.945016],
-                [102.639045, 37.945123],
-                [102.639072, 37.944965],
-                [102.637977, 37.944821],
-            ],
-            textPoint: [102.637925, 37.945126],
-            dotList: [
-                [102.637925, 37.945166],
-                [102.638225, 37.945186],
-                [102.638625, 37.945246],
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '84aed9', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.637733,37.945333],
-                [102.638514,37.945429],
-                [102.638527,37.945274],
-                [102.637764,37.945181],
-            ],
-            textPoint: [102.637563,37.945652],
-            dotList: [
-                [102.637403,37.945652],
-                [102.637903,37.945722],
-            ],
-        }];
 
         buildingLayer.setStyle({
             hideWithoutStyle: true,
-            areas
+            areas: [{
+                rejectTexture: true,
+                // color1: '072d5d', //顶面
+                // color2: '062b5b', 
+                path: [
+                    [102.637337, 37.947473],
+                    // [102.6641608, 37.947495],
+                    // [102.641945, 37.945058],
+                    // [102.637764, 37.944807],
+                ]
+            }]
         });
 
         var canvas = document.createElement('canvas');
@@ -174,147 +149,125 @@ onMounted(() => {
                 buildingLayer,
                 // customLayer,
                 // imageLayer
-                canvasLayer
+                canvasLayer,
             ]
         });
 
-        // var text = new AMap.Text({
-        //     text: '1栋1单元 26.7℃',
-        //     // anchor: 'center', // 设置文本标记锚点
-        //     // draggable:true,
-        //     // cursor:'pointer',
-        //     angle: -6,
-        //     style:{
-        //         // 'padding': '.75rem 1.25rem',
-        //         // 'margin-bottom': '1rem',
-        //         // 'border-radius': '.25rem',
-        //         'background-color': 'transparent',
-        //         // 'width': '15rem',
-        //         'border-width': 0,
-        //         // 'box-shadow': '0 2px 6px 0 rgba(114, 124, 245, .5)',
-        //         // 'text-align': 'center',
-        //         'font-size': '20px',
-        //         'color': '#4c4c4c'
-        //     },
-        //     position: [102.637925, 37.945126]
-        //     // position: [102.637925, 37.945016]
-        // });
+        let camera, renderer, scene;
+        var meshes = [];
+        var customCoords = map.customCoords;
+        // 数据使用转换工具进行转换，这个操作必须要提前执行（在获取镜头参数 函数之前执行），否则将会获得一个错误信息。
+        var data = customCoords.lngLatsToCoords([
+            [102.638453, 37.944972],
+            [102.639769, 37.945106]
+            // [116.52, 39.79],
+            // [116.54, 39.79],
+            // [116.56, 39.79],
+        ]);
 
-        // var marker = new AMap.Marker({
-        //     position: new AMap.LngLat(102.637925, 37.945166),
-        //     content: `<div class="floor-marker">
-        //         <div class="floor-marker-box">
-        //             <div class="floor-marker-box-item">单元号: 2103</div>
-        //             <div class="floor-marker-box-item">阀位: 52%</div>
-        //             <div class="floor-marker-box-item">回温: 37.9℃</div>
-        //             <div class="floor-marker-box-item">流量: 60.4t/h</div>
-        //         </div>
-        //         <div class="floor-marker-dot"></div>
-        //         <div class="floor-marker-line"></div>
-        //         <img class="floor-marker-img" src=${marker1} />
-        //     </div>`,
-        //     offset: new AMap.Pixel(0, -140)
-        // });
+        var glLayer = new AMap.GLCustomLayer({
+            zIndex: 200,
+            init: (gl) => {
+                camera = new THREE.PerspectiveCamera(
+                    60,
+                    window.innerWidth / window.innerHeight,
+                    100,
+                    8000
+                );
 
-        // map.add(marker)
+                renderer = new THREE.WebGLRenderer({
+                    context: gl, // 地图的 gl 上下文
+                    // alpha: true,
+                    // antialias: true,
+                    // canvas: gl.canvas,
+                });
 
-        // text.setMap(map);
+                // 自动清空画布这里必须设置为 false，否则地图底图将无法显示
+                renderer.autoClear = false;
+                scene = new THREE.Scene();
 
-        createMarkerText(AMap, map, areas);
+                // 环境光照和平行光
+                var aLight = new THREE.AmbientLight(0xffffff, 0.3);
+                var dLight = new THREE.DirectionalLight(0xffffff, 1);
+                dLight.position.set(1000, -100, 900);
+                scene.add(dLight);
+                scene.add(aLight);
+
+                var texture = new THREE.TextureLoader().load(
+                    'https://a.amap.com/jsapi_demos/static/demo-center-v2/three.jpeg'
+                );
+                texture.minFilter = THREE.LinearFilter;
+                //  这里可以使用 three 的各种材质
+                var mat = new THREE.MeshPhongMaterial({
+                    color: 0xfff0f0,
+                    depthTest: true,
+                    transparent: true,
+                    // map: texture,
+                });
+
+                var geo = new THREE.BoxBufferGeometry(100, 15, 25);
+                for (let i = 0; i < data.length; i++) {
+                    const d = data[i];
+                    var mesh = new THREE.Mesh(geo, mat);
+                    mesh.position.set(d[0], d[1], 0);
+                    mesh.rotateZ(Math.PI / 22);
+                    meshes.push({
+                        mesh,
+                        count: i,
+                    });
+                    scene.add(mesh);
+                }
+
+            },
+            render: () => {
+                // 这里必须执行！！重新设置 three 的 gl 上下文状态。
+                renderer.resetState();
+                // 重新设置图层的渲染中心点，将模型等物体的渲染中心点重置
+                // 否则和 LOCA 可视化等多个图层能力使用的时候会出现物体位置偏移的问题
+                // customCoords.setCenter([116.52, 39.79]);
+                customCoords.setCenter([102.638453, 37.944972]);
+                // customCoords.setCenter([102.6398, 37.9459]);
+                var { near, far, fov, up, lookAt, position } =
+                    customCoords.getCameraParams();
+
+                // 2D 地图下使用的正交相机
+                // var { near, far, top, bottom, left, right, position, rotation } = customCoords.getCameraParams();
+
+                // console.log(position)
+
+                // 这里的顺序不能颠倒，否则可能会出现绘制卡顿的效果。
+                camera.near = near;
+                camera.far = far;
+                camera.fov = fov;
+                camera.position.set(...position);
+                // camera.position.set(200, -500, 500);
+                camera.up.set(...up);
+                camera.lookAt(...lookAt);
+                camera.updateProjectionMatrix();
+
+                // 2D 地图使用的正交相机参数赋值
+                // camera.top = top;
+                // camera.bottom = bottom;
+                // camera.left = left;
+                // camera.right = right;
+                // camera.position.set(...position);
+                // camera.updateProjectionMatrix();
+
+                renderer.render(scene, camera);
+
+                // 这里必须执行！！重新设置 three 的 gl 上下文状态。
+                renderer.resetState();
+            }
+        });
+
+        map.add(glLayer);
+
     }).catch(e => {
         console.log(e)
     });
 });
-
-const createMarkerText = (AMap, map, areas) => {
-    areas.forEach(item => {
-        var text = new AMap.Text({
-            text: '1栋1单元 26.7℃',
-            // anchor: 'center', // 设置文本标记锚点
-            // draggable:true,
-            // cursor:'pointer',
-            angle: -6,
-            style:{
-                // 'padding': '.75rem 1.25rem',
-                // 'margin-bottom': '1rem',
-                // 'border-radius': '.25rem',
-                'background-color': 'transparent',
-                // 'width': '15rem',
-                'border-width': 0,
-                // 'box-shadow': '0 2px 6px 0 rgba(114, 124, 245, .5)',
-                // 'text-align': 'center',
-                'font-size': '20px',
-                'color': '#4c4c4c'
-            },
-            position: item.textPoint,
-            // position: [102.637925, 37.945126]
-            // position: [102.637925, 37.945016]
-        });
-
-        item.dotList.forEach(dot => {
-            var marker = new AMap.Marker({
-                // position: new AMap.LngLat(102.637925, 37.945126),
-                position: new AMap.LngLat(...dot),
-                content: `<div class="floor-marker">
-                    <div class="floor-marker-box">
-                        <div class="floor-marker-box-item">单元号: 2103</div>
-                        <div class="floor-marker-box-item">阀位: 52%</div>
-                        <div class="floor-marker-box-item">回温: 37.9℃</div>
-                        <div class="floor-marker-box-item">流量: 60.4t/h</div>
-                    </div>
-                    <div class="floor-marker-dot"></div>
-                    <div class="floor-marker-line"></div>
-                    <img class="floor-marker-img" src=${marker1} />
-                </div>`,
-                offset: new AMap.Pixel(0, -140)
-            });
-
-            map.add(marker);
-        });
-
-        
-        text.setMap(map);
-    });
-}
 </script>
 
-<style lang="scss">
-.floor-marker {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    &-box {
-        min-width: 80px;
-        padding: 6px 10px;
-        height: 80px;
-        border: 1px solid #999;
-        border-radius: 10px;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: #fff;
-        font-size: 12px;
-
-        &-item {
-            line-height: 20px;
-        }
-    }
-
-    &-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: #24e0bb;
-        margin-top: -5px;
-    }
-    
-    &-line {
-        width: 1px;
-        height: 30px;
-        background-color: #3f7a6f;
-    }
-}
-</style>
 <style lang="scss" scoped>
 .home {
     width: 100%;

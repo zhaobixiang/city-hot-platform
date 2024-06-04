@@ -1,6 +1,6 @@
 <template>
   <div class="standard">
-    <mode-box mode="standard" />
+    <mode-box mode="standard" :count="floorNum" :floor="floor" @change-floor="changeFloor" />
     <div class="standard-title">碧水兰庭</div>
 
     <div class="standard-arrow left" @click="onPrev">
@@ -37,14 +37,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import ModeBox from '@/components/mode.vue';
 import houseCard from '@/components/house-card.vue';
 
 import arrowLImg from "@/assets/arrowls.png";
 import arrowRImg from "@/assets/arrowrs.png";
 
+const props = defineProps({
+    data: {
+        type: Object,
+        default: () =>({})
+    },
+    floor: {
+        type: Number,
+        default: 1
+    }
+})
+const emit = defineEmits(['change-floor']);
+
 const carousel = ref();
+
+// 楼数
+const floorNum = computed(() => {
+    return props.total ?? 14;
+});
 
 const onPrev = () => {
     carousel.value.prev();
@@ -52,6 +69,10 @@ const onPrev = () => {
 
 const onNext = () => {
     carousel.value.next();
+}
+
+const changeFloor = (v) => {
+    emit('change-floor', v);
 }
 </script>
 

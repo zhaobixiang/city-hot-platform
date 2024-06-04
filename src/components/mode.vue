@@ -2,9 +2,22 @@
   <div class="mode">
     <div v-if="mode === 'standard'" class="mode-select">
         <div class="mode-select-pre">当前</div>
-        <div class="mode-select-next">
-            一号楼
-        </div>
+        
+        <el-dropdown @command="changeFloor">
+            <div class="mode-select-next">
+                {{ floor }}号楼
+
+                <el-icon class="mode-select-next-icon">
+                    <arrow-down />
+                </el-icon>
+            </div>
+            
+            <template #dropdown>
+                <el-dropdown-menu>
+                    <el-dropdown-item v-for="i in count" :key="i" :command="i">{{ i }}号楼</el-dropdown-item>
+                </el-dropdown-menu>
+            </template>
+        </el-dropdown>
     </div>
     <div v-if="mode === 'all'" class="mode-box">
         <div class="mode-box-dot"></div>
@@ -30,13 +43,23 @@
 
 <script setup>
 import { ref } from 'vue';
+import { ArrowDown } from '@element-plus/icons-vue';
 
 const props = defineProps({
     mode: {
         type: String,
         default: 'all'
+    },
+    floor: {
+        type: Number,
+        default: 1
+    },
+    count: {
+        type: Number,
+        default: 1
     }
 });
+const emit = defineEmits(['change-floor']);
 
 const current = ref(6);
 const modeList = ref([{
@@ -59,6 +82,9 @@ const modeList = ref([{
     name: '停暖',
 }]);
 
+const changeFloor = (v) => {
+    emit('change-floor', v);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -134,6 +160,13 @@ const modeList = ref([{
             background-color: #056a74;
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+
+            &-icon {
+                margin-left: 8px;
+            }
         }
     }
   }
