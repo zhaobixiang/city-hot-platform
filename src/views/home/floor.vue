@@ -2,7 +2,7 @@
   <div class="home">
     <div class="home-toolbar">
         <div class="home-toolbar-left">
-            <div class="home-toolbar-back">
+            <div class="home-toolbar-back" @click="emit('hide')">
                 <img :src="backImg" />
                 返回
             </div>
@@ -88,9 +88,10 @@ import { ArrowDown } from '@element-plus/icons-vue';
 import backImg from "@/assets/back.png";
 import areaImg from "@/assets/area.png";
 import tempImg from "@/assets/temp.png";
-
 import All from './all.vue';
 import Standard from './standard.vue';
+
+const emit = defineEmits(['hide']);
 
 const mode = ref('all');
 const floor = ref(1);
