@@ -7,7 +7,7 @@
       <img :src="icon4Img" />
       <img :src="icon5Img" />
       <div class="house-header-text">策略</div>
-      <img :src="icon6Img" />
+      <img :src="icon6Img" @click="onSetting" />
     </div>
     <div class="house-main">
       <div class="house-main-top">
@@ -88,6 +88,10 @@ const progressImg = computed(() => {
   return [progress1Img, progress2Img, progress3Img, progress4Img][props.type];
 });
 
+const onSetting = () => {
+  alert('test...');
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -135,6 +139,7 @@ const progressImg = computed(() => {
         width: 16px;
         height: 19px;
         margin-right: 2px;
+        cursor: pointer;
       }
     }
   }
@@ -178,6 +183,7 @@ const progressImg = computed(() => {
         div {
           font-size: 12px;
           color: #fff;
+          z-index: 1;
 
           &:nth-child(1) {
             font-size: 18px;

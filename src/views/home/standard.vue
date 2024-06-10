@@ -14,11 +14,11 @@
     </div>
 
     <div class="standard-main">
-        <el-carousel ref="carousel" height="calc(100vh - 170px)" :autoplay="false" indicator-position="none">
+        <el-carousel ref="carousel" height="calc(100vh - 170px)" :autoplay="false" indicator-position="none" arrow="never">
             <el-carousel-item v-for="item in 3" :key="item">
                 <div class="standard-box" v-for="i in 3" :key="i"> 
                     <div class="standard-box-header">
-                        {{ item }}单元
+                        {{ i }}单元
                     </div>
                     <div class="standard-box-main">
                         <house-card class="standard-box-main-card" v-for="v in 10" :key="v" :type="0" />
@@ -172,9 +172,13 @@ const changeFloor = (v) => {
             height: 48px;
             line-height: 48px;
             text-align: center;
-            color: #fff;
+            // color: #fff;
             font-size: 16px;
             z-index: 9;
+
+            background-image: -webkit-linear-gradient(top, #fff, #d3faff,#108fa1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         &-main {

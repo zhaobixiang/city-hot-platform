@@ -12,7 +12,6 @@
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.7.4",
-    "three": "^0.165.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {

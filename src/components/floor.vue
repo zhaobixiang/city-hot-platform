@@ -1,7 +1,7 @@
 <template>
   <div class="floor">
     <div class="floor-title">{{ title }}</div>
-    <img :src="floorImg" />
+    <img :src="floorImg" :style="{ width: `${width}px`, height: `${height}px` }" />
   </div>
 </template>
 
@@ -12,9 +12,16 @@ defineProps({
   title: {
     type: String,
     default: '1号楼'
+  },
+  width: {
+    type: [String, Number],
+    default: 129
+  },
+  height: {
+    type: [String, Number],
+    default: 122
   }
 });
-
 </script>
 
 <style lang="scss" scoped>

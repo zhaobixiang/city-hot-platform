@@ -35,7 +35,7 @@
         <div class="mode-box-dot green"></div>
         <div class="mode-box-text">正常</div>
     </div>
-    <div class="mode-item" v-for="item in modeList" :key="item.id" :class="{ checked: item.id === current }">
+    <div class="mode-item" v-for="item in modeList" :key="item.id" :class="{ checked: item.id === current }" @click="current = item.id">
         {{ item.name }}
     </div>
 </div>
@@ -61,7 +61,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['change-floor']);
 
-const current = ref(6);
+const current = ref(4);
 const modeList = ref([{
     id: 1,
     name: '阀位',
@@ -74,13 +74,15 @@ const modeList = ref([{
 }, {
     id: 4,
     name: '室温',
-}, {
-    id: 5,
-    name: '欠费',
-}, {
-    id: 6,
-    name: '停暖',
-}]);
+}
+// , {
+//     id: 5,
+//     name: '欠费',
+// }, {
+//     id: 6,
+//     name: '停暖',
+// }
+]);
 
 const changeFloor = (v) => {
     emit('change-floor', v);
@@ -128,15 +130,19 @@ const changeFloor = (v) => {
 
     &-item {
         padding: 0 12px;
-        border: 1px solid #2dbee9;
-        border-radius: 3px;
-        background-color: transparent;
+        // border: 1px solid #2dbee9;
+        // border-radius: 3px;
+        // background-color: transparent;
         line-height: 30px;
-        margin-left: 20px;
+        margin-left: 16px;
         color: #fff;
+        background: url('@/assets/box1.png') no-repeat;
+        background-size: 100% 100%;
+        cursor: pointer;
 
         &.checked {
-            background-color: #13a0ad;
+            background: url('@/assets/box2.png') no-repeat;
+            background-size: 100% 100%;
         }
     }
 

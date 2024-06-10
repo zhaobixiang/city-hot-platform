@@ -151,6 +151,7 @@ const changeFloor = (v) => {
     &-back {
         display: flex;
         align-items: center;
+        font-size: 1rem;
 
         img {
             width: 19px;
@@ -163,12 +164,11 @@ const changeFloor = (v) => {
         width: 1px;
         height: 24px;
         background: #111;
-        margin: 0 20px
+        margin: 0 1rem;
     }
 
     &-title {
-        font-size: 28px;
-        line-height: 60px;
+        font-size: 1.5rem;
         margin-right: 30px;
     }
 

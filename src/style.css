@@ -38,4 +38,21 @@ html, body {
 ::-webkit-scrollbar-thumb {
   background: #999; 
 }
- 
+
+@media only screen and (max-width: 1600px) and (min-width: 1280px) {
+  html {
+    font-size: 14px;
+  }
+} 
+
+@media only screen and (max-width: 1280px) and (min-width: 960px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-width: 960) {
+  html {
+    font-size: 10px;
+  }
+} 

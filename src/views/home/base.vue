@@ -1,7 +1,37 @@
 <template>
     <div class="home">
         <div class="home-toolbar">
-            <div class="home-toolbar-title">碧水兰庭基本信息</div>
+            <div class="home-toolbar-left">
+                <div class="home-toolbar-title">碧水兰庭基本信息</div>
+                <div class="home-toolbar-info">
+                    <img :src="areaImg" />
+                    <div class="home-toolbar-info-label">热网面积</div>
+                    <div class="home-toolbar-info-value">{{ floorData.d1 }}</div>
+                    <div class="home-toolbar-info-label">供热面积</div>
+                    <div class="home-toolbar-info-value">{{ floorData.d2 }}</div>
+                </div>
+
+                <div class="home-toolbar-info">
+                    <img :src="tempImg" />
+                    <div class="home-toolbar-info-label">正常供热</div>
+                    <div class="home-toolbar-info-value">{{ floorData.d3 }}</div>
+                    <div class="home-toolbar-info-label small">停供</div>
+                    <div class="home-toolbar-info-value">{{ floorData.d4 }}</div>
+                    <div class="home-toolbar-info-label small">欠费</div>
+                    <div class="home-toolbar-info-value">{{ floorData.d5 }}</div>
+                </div>
+
+                <div class="home-toolbar-info">
+                    <img :src="tempImg" />
+                    <div class="home-toolbar-info-label">18℃以下</div>
+                    <div class="home-toolbar-info-value">{{ floorData.d6 }}</div>
+                    <div class="home-toolbar-info-label">18℃ -24℃</div>
+                    <div class="home-toolbar-info-value">{{ floorData.d7 }}</div>
+                    <div class="home-toolbar-info-label">24℃以上</div>
+                    <div class="home-toolbar-info-value">{{ floorData.d8 }}</div>
+                </div>
+            </div>
+            
             <div class="home-toolbar-right">
                 <el-dropdown>
                     <div class="home-toolbar-select">
@@ -30,16 +60,18 @@
                     
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item>参数</el-dropdown-item>
+                            <el-dropdown-item>阀位</el-dropdown-item>
+                            <el-dropdown-item>回温</el-dropdown-item>
+                            <el-dropdown-item>室温</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>
 
                 <div class="home-toolbar-right-line"></div>
 
-                <el-dropdown>
+                <el-dropdown @command="changeMode">
                     <div class="home-toolbar-select">
-                        倾斜模式
+                        {{ mode === '1' ? '倾斜模式' : '标准模式' }}
                         <el-icon class="home-toolbar-select-icon">
                             <arrow-down />
                         </el-icon>
@@ -47,8 +79,8 @@
                     
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item>倾斜模式</el-dropdown-item>
-                            <el-dropdown-item>标准模式</el-dropdown-item>
+                            <el-dropdown-item command="1">倾斜模式</el-dropdown-item>
+                            <el-dropdown-item command="2">标准模式</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>
@@ -71,16 +103,41 @@
 import { ref, onMounted } from 'vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
+import areaImg from "@/assets/area.png";
+import tempImg from "@/assets/temp.png";
 import eyeImg from '@/assets/eye.png';
 import marker1 from '@/assets/marker1.png';
 
+import geoJson from './geo.json';
+import { list_2d, list_3d } from './data.js';
+
 const emit = defineEmits(['go-floor']);
 
-let $map;
+let $AMap, $map, $loca;
+const mode = ref('1');
 const showDialog = ref(true);
 const allMarkers = [];
+const allMarker1s = [];
+const allTexts = [];
+
+const floorData = ref({
+    d1: '24588m²',
+    d2: '10488m²',
+    d3: '165户',
+    d4: '22户',
+    d5: '7户',
+    d6: '7户',
+    d7: '127户',
+    d8: '22户',
+    total: 14, // 楼数量
+    layer: 10, // 层数
+    unit: 3, // 单元数
+    door: 4, // 户数
+});
 
 onMounted(() => {
+    // emit('go-floor');
+
     window._AMapSecurityConfig = {
         securityJsCode: 'b0f14636e082801bf255f5ad23eadeb9',
     };
@@ -88,396 +145,12 @@ onMounted(() => {
     AMapLoader.load({
         key: '2291cfc955f46af970fd00847bf1529e',
         version: '2.0',
-        plugins: []
+        plugins: [],
+        Loca: {               
+            "version": '2.0.0'
+        },
     }).then((AMap) => {
-        const buildingLayer = new AMap.Buildings({
-            zIndex: 130,
-            zooms: [16, 20],
-        });
-
-        // [
-        //     [102.637337, 37.947473],
-        //     [102.6641608, 37.947495],
-        //     [102.641945, 37.945058],
-        //     [102.637764, 37.944807],
-        // ]
-
-        const areas = [{
-            rejectTexture: true,
-            color1: 'df9b87', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.637925, 37.945016],
-                [102.639045, 37.945123],
-                [102.639072, 37.944965],
-                [102.637977, 37.944821],
-            ],
-            textPoint: [[102.637925, 37.945126]],
-            dotList: [
-                [102.637925, 37.945166],
-                [102.638225, 37.945186],
-                [102.638625, 37.945246],
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '84aed9', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.637733,37.945333],
-                [102.638514,37.945429],
-                [102.638527,37.945274],
-                [102.637764,37.945181],
-            ],
-            textPoint: [[102.637563,37.945622]],
-            dotList: [
-                [102.637403,37.945652],
-                [102.637903,37.945722],
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.637699,37.945643],
-                [102.638469,37.945769],
-                [102.638493,37.945586],
-                [102.637728,37.945475],
-            ],
-            textPoint: [[102.63679,37.94688]],
-            dotList: [
-                [102.63656,37.94688],
-                [102.63703,37.94696],
-            ],
-        }, {
-            rejectTexture: true,
-            color1: 'df9b87', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.637531,37.946343],
-                [102.638631,37.946506],
-                [102.638762,37.945933],
-                [102.637652,37.945785],
-            ],
-            textPoint: [[102.63688, 37.9474]],
-            dotList: [
-                [102.6376, 37.94756],
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.638545,37.94546],
-                [102.639164,37.945539],
-                [102.639184,37.945314],
-                [102.638603,37.945221],
-            ],
-            textPoint: [[102.63849,37.9456]],
-            dotList: [],
-        }, {
-            rejectTexture: true,
-            color1: '84aed9', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.638488,37.945756],
-                [102.639195,37.945869],
-                [102.639221,37.9457],
-                [102.638508,37.945571],
-            ],
-            textPoint: [[102.63849,37.94598]],
-            dotList: [
-                [102.63849,37.94602]
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.638929,37.94622],
-                [102.639473,37.946297],
-                [102.639551,37.945992],
-                [102.638995,37.945924],
-            ],
-            textPoint: [[102.63897,37.94628]],
-            dotList: [
-                [102.638929,37.94628]
-            ],
-            fontSize: '14px'
-        }, {
-            rejectTexture: true,
-            color1: 'df9b87', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.638974,37.946948],
-                [102.639487,37.946975],
-                [102.639515,37.946795],
-                [102.639023,37.946729],
-            ],
-            textPoint: [[102.63904,37.94696]],
-            dotList: [
-                [102.63904,37.94706]
-            ],
-            fontSize: '12px'
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.638539,37.947341],
-                [102.639315,37.947346],
-                [102.639272,37.947149],
-                [102.638524,37.947152],
-            ],
-            textPoint: [[102.63855,37.9474]],
-            dotList: [
-                [102.63855,37.94746]
-            ],
-            angle: 0,
-            fontSize: '16px'
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.639531,37.947372],
-                [102.640456,37.947383],
-                [102.640437,37.947089],
-                [102.639497,37.947104],
-            ],
-            textPoint: [[102.63964,37.9474]],
-            dotList: [
-                [102.63964,37.94745]
-            ],
-            angle: 0,
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.640475,37.947395],
-                [102.641018,37.947356],
-                [102.641003,37.947116],
-                [102.6405,37.947124],
-            ],
-            textPoint: [
-                [102.64055,37.94743]
-            ],
-            dotList: [
-                [102.64055,37.94743]
-            ],
-            angle: 0,
-            fontSize: '12px'
-        }, {
-            rejectTexture: true,
-            color1: '84aed9', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.641061,37.947333],
-                [102.641608,37.947333],
-                [102.641618,37.947108],
-                [102.641022,37.947116],
-            ],
-            textPoint: [[102.64115,37.94738]],
-            dotList: [],
-            angle: 1,
-            fontSize: '12px'
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.641647,37.947353],
-                [102.642547,37.94733],
-                [102.642552,37.947116],
-                [102.641642,37.947108],
-            ],
-            textPoint: [[102.64213,37.94738]],
-            dotList: [
-                [102.64213,37.94742]
-            ],
-            angle: 1,
-            fontSize: '12px'
-        }, {
-            rejectTexture: true,
-            color1: 'df9b87', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.639604,37.94699],
-                [102.640098,37.947047],
-                [102.640122,37.946826],
-                [102.639628,37.946761],
-            ],
-            textPoint: [[102.63967,37.94702]],
-            dotList: [
-                [102.63967,37.9471]
-            ],
-            fontSize: '12px'
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.640107,37.947017],
-                [102.640446,37.94704],
-                [102.640475,37.946872],
-                [102.640132,37.946814],
-            ],
-            textPoint: [],
-            dotList: [],
-        }, {
-            rejectTexture: true,
-            color1: '84aed9', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.639938,37.94665],
-                [102.641356,37.946795],
-                [102.641381,37.946593],
-                [102.639972,37.946436],
-            ],
-            textPoint: [[102.64032,37.94691]],
-            dotList: [
-                [102.63998,37.94691],
-                [102.64042,37.94699],
-                [102.64088,37.94705]
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.641371,37.94678],
-                [102.641831,37.946822],
-                [102.641865,37.946635],
-                [102.641376,37.946589],
-            ],
-            textPoint: [[102.6418,37.94782]],
-            dotList: [
-                [102.6418,37.9479]
-            ],
-            fontSize: '14px'
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.641826,37.946833],
-                [102.642668,37.946978],
-                [102.642697,37.946768],
-                [102.64186,37.946616],
-            ],
-            textPoint: [[102.64206,37.94708]],
-            dotList: [],
-            fontSize: '16px',
-            angle: -8
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.639846,37.946245],
-                [102.64125,37.946425],
-                [102.64126,37.946203],
-                [102.63989,37.946062],
-            ],
-            textPoint: [[102.64018,37.94651]],
-            dotList: [],
-        }, {
-            rejectTexture: true,
-            color1: 'df9b87', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.64154,37.946444],
-                [102.642712,37.9466],
-                [102.642746,37.946425],
-                [102.641584,37.946276],
-            ],
-            textPoint: [[102.64185,37.94671]],
-            dotList: [
-                [102.64185,37.94676]
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '84aed9', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.639328,37.945936],
-                [102.640466,37.946005],
-                [102.640461,37.94581],
-                [102.639386,37.945707],
-            ],
-            textPoint: [[102.639368,37.946036]],
-            dotList: [
-                [102.640138,37.946128]
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '84aed9', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.64064,37.946005],
-                [102.641778,37.946119],
-                [102.641792,37.945955],
-                [102.640679,37.945829],
-            ],
-            textPoint: [[102.64094,37.946225]],
-            dotList: [
-                [102.64074,37.946225],
-                [102.64134,37.946325],
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.639231,37.945535],
-                [102.640233,37.945642],
-                [102.640267,37.94547],
-                [102.63927,37.945363],
-            ],
-            textPoint: [[102.639331,37.945935]],
-            dotList: [
-                [102.63946,37.94598]
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.641071,37.945726],
-                [102.642058,37.945856],
-                [102.642083,37.945677],
-                [102.64109,37.945558],
-            ],
-            textPoint: [[102.641371,37.945922]],
-            dotList: [
-                [102.641311,37.945962],
-                [102.641881,37.946042]
-            ],
-        }, {
-            rejectTexture: true,
-            color1: '69ada0', //顶面
-            color2: '4c4c4c', 
-            path: [
-                [102.639196,37.945282],
-                [102.641304,37.945493],
-                [102.64139,37.945184],
-                [102.639228,37.944923],
-            ],
-            textPoint: [
-                [102.639498,37.945302],
-                [102.640496,37.945502],
-            ],
-            dotList: [
-                [102.639298,37.945302],
-                [102.640196,37.945502],
-                [102.640696,37.945562],
-            ],
-        }];
-
-        buildingLayer.setStyle({
-            hideWithoutStyle: true,
-            areas
-        });
+        $AMap = AMap;
 
         var canvas = document.createElement('canvas');
  
@@ -503,135 +176,180 @@ onMounted(() => {
             zooms: [16, 20],
         });
 
+        const width = window.innerWidth;
+        const zoom = width >= 1920 ? 18.5 : width >= 1680 ? 18.3 : 18;
+
+        console.log(zoom)
+
         const map = new AMap.Map('map', {
             viewMode: '3D',
             center: [102.6401, 37.94628],
             // zoom: 18.8,
-            zoom: 18.5,
+            zoom,
             pitch: 45,
-            // rotation: 20,
+            // pitch: 10,
             dragEnable: false,
             zoomEnable: false,
             scrollWheel: false,
+            doubleClickZoom: false,
+            showBuildingBlock: false,
+
             mapStyle: "amap://styles/blue",
             features: ['bg', 'road', 'building'],
             layers: [
                 AMap.createDefaultLayer(),
-                buildingLayer,
-                // customLayer,
-                // imageLayer
                 canvasLayer
             ]
         });
 
+        const loca = new Loca.Container({
+            map: map
+        });
+
+        loca.ambLight = {
+            intensity: 0.3,
+            color: '#fff',
+        };
+
+        // loca.dirLight = {
+        //     intensity: 0.6,
+        //     color: '#fff',
+        //     target: [0, 0, 0],
+        //     position: [0, -1, 1],
+        // };
+
+        loca.pointLight = {
+            color: 'rgb(100, 100, 100)',
+            position: [102.6401, 37.94628, 20000],
+            intensity: 0.5,
+            distance: 50000,
+        };
+
+        const geo = new Loca.GeoJSONSource({
+            // data: geoData
+            data: geoJson
+        });
+
+        var pl = new Loca.PolygonLayer({
+            zIndex: 200,
+            cullface: 'none',
+            shininess: 10,
+            // labelsLayerOptions: {
+            //     zIndex: 199,
+            //     collision: true
+            // }
+        });
+
+        pl.setSource(geo);
+
+        pl.setStyle({
+            topColor: (_, feature) => {
+                return feature.properties.color;
+            },
+            // sideTopColor: '#4c4c4c',
+            // sideBottomColor: '#4c4c4c',
+            sideTopColor: '#666',
+            sideBottomColor: '#666',
+            altitude: 0,
+            height: (_, feature) => {
+                return feature.properties.height;
+            },
+            // label: {
+            //     // zIndex: 1,
+            //     text: {
+            //         content: (_, feature) => feature.properties.name || '1栋1单元 26.7℃',
+            //         // offset: [0, 10],
+            //         direction: 'center',
+            //         style: {
+            //             fontSize: 18,
+            //             fillColor: '#4c4c4c',
+            //         }
+            //     }
+            // },
+        });
+        
+        loca.add(pl);
+
         map.on('dblclick', e => {
             // console.log(e)
 
-            const pos = e.lnglat;
-            // 点击在楼范围内
-            const floor = areas.find(v => AMap.GeometryUtil.isPointInRing(pos, v.path));
+            const feat = pl.queryFeature(e.pixel.toArray());
 
-            if (floor) {
+            // console.log(feat)
+
+            if (feat) {
                 emit('go-floor');
             }
         });
 
-        // var text = new AMap.Text({
-        //     text: '1栋1单元 26.7℃',
-        //     // anchor: 'center', // 设置文本标记锚点
-        //     // draggable:true,
-        //     // cursor:'pointer',
-        //     angle: -6,
-        //     style:{
-        //         // 'padding': '.75rem 1.25rem',
-        //         // 'margin-bottom': '1rem',
-        //         // 'border-radius': '.25rem',
-        //         'background-color': 'transparent',
-        //         // 'width': '15rem',
-        //         'border-width': 0,
-        //         // 'box-shadow': '0 2px 6px 0 rgba(114, 124, 245, .5)',
-        //         // 'text-align': 'center',
-        //         'font-size': '20px',
-        //         'color': '#4c4c4c'
-        //     },
-        //     position: [102.637925, 37.945126]
-        //     // position: [102.637925, 37.945016]
+        // map.on('dblclick', e => {
+        //     // console.log(e)
+
+        //     const pos = e.lnglat;
+        //     // 点击在楼范围内
+        //     const floor = areas.find(v => AMap.GeometryUtil.isPointInRing(pos, v.path));
+
+        //     if (floor) {
+        //         emit('go-floor');
+        //     }
         // });
 
-        // var marker = new AMap.Marker({
-        //     position: new AMap.LngLat(102.637925, 37.945166),
-        //     content: `<div class="floor-marker">
-        //         <div class="floor-marker-box">
-        //             <div class="floor-marker-box-item">单元号: 2103</div>
-        //             <div class="floor-marker-box-item">阀位: 52%</div>
-        //             <div class="floor-marker-box-item">回温: 37.9℃</div>
-        //             <div class="floor-marker-box-item">流量: 60.4t/h</div>
-        //         </div>
-        //         <div class="floor-marker-dot"></div>
-        //         <div class="floor-marker-line"></div>
-        //         <img class="floor-marker-img" src=${marker1} />
-        //     </div>`,
-        //     offset: new AMap.Pixel(0, -140)
-        // });
-
-        // map.add(marker)
-
-        // text.setMap(map);
-
-        createMarkerText(AMap, map, areas);
+        createMarkerText(AMap, map);
 
         $map = map;
+        $loca = loca;
     }).catch(e => {
         console.log(e)
     });
 });
 
-const createMarkerText = (AMap, map, areas) => {
-    areas.forEach(item => {
-        item.textPoint.forEach(tp => {
+const createMarkerText = (AMap, map) => {
+    list_3d.forEach(item => {
+        item.text.forEach(tp => {
             var text = new AMap.Text({
                 text: '1栋1单元 26.7℃',
-                // anchor: 'center', // 设置文本标记锚点
-                // draggable:true,
-                // cursor:'pointer',
                 angle: item.angle ?? -6,
                 style:{
-                    // 'padding': '.75rem 1.25rem',
-                    // 'margin-bottom': '1rem',
-                    // 'border-radius': '.25rem',
                     'background-color': 'transparent',
-                    // 'width': '15rem',
                     'border-width': 0,
-                    // 'box-shadow': '0 2px 6px 0 rgba(114, 124, 245, .5)',
-                    // 'text-align': 'center',
                     'font-size': item.fontSize ?? '18px',
                     'color': '#4c4c4c'
                 },
+                clickable: false,
                 zIndex: 15,
-                position: tp,
-                // position: [102.637925, 37.945126]
-                // position: [102.637925, 37.945016]
+                position: tp
             });
 
+            allTexts.push(text);
             text.setMap(map);
         });
 
-        item.dotList.forEach(dot => {
+        item.marker.forEach(dot => {
             var marker = new AMap.Marker({
                 // position: new AMap.LngLat(102.637925, 37.945126),
                 position: new AMap.LngLat(...dot),
+                // anchor: 'bottom-center',
                 content: `<div class="floor-marker">
-                    <div class="floor-marker-box">
-                        <div class="floor-marker-box-item">单元号: 2103</div>
-                        <div class="floor-marker-box-item">阀位: 52%</div>
-                        <div class="floor-marker-box-item">回温: 37.9℃</div>
-                        <div class="floor-marker-box-item">流量: 60.4t/h</div>
-                    </div>
-                    <div class="floor-marker-dot"></div>
-                    <div class="floor-marker-line"></div>
-                    <img class="floor-marker-img" src=${marker1} />
-                </div>`,
-                offset: new AMap.Pixel(0, -140),
+                        <div class="floor-marker-box">
+                            <div class="floor-marker-box-header">单元号: 2103</div>
+                            <div class="floor-marker-box-body">
+                                <div>阀位: 52%</div>
+                                <div>回温: 37.9℃</div>
+                                <div>流量: 60.4t/h</div>
+                            </div>
+                        </div><div class="floor-marker-box1" style="display: none;">
+                            <div class="floor-marker-box1-header">单元号: 2103</div>
+                            <div class="floor-marker-box1-body">
+                                <div>阀位: 52%</div>
+                                <div>回温: 37.9℃</div>
+                                <div>流量: 60.4t/h</div>
+                            </div>
+                        </div>
+                        <div class="floor-marker-dot"></div>
+                        <div class="floor-marker-line"></div>
+                        <img class="floor-marker-img" src=${marker1} />
+                    </div>`,
+                offset: new AMap.Pixel(0, -40),
                 zIndex: 16,
             });
 
@@ -639,6 +357,142 @@ const createMarkerText = (AMap, map, areas) => {
             map.add(marker);
         });
     });
+
+    const markers = document.querySelectorAll('.floor-marker');
+    const boxs = document.querySelectorAll('.floor-marker-box');
+    const box1s = document.querySelectorAll('.floor-marker-box1');
+
+    [...markers].forEach(node => {
+        node.addEventListener('dblclick', (e) => {
+            console.log(e)
+            alert('test...');
+        });
+    });
+
+    [...boxs].forEach(node => {
+        node.addEventListener('mousemove', (e) => {
+            const self = e.currentTarget;
+            const next = self.nextSibling;
+
+            if (self) {
+                self.style.display = 'none';
+            }
+            if (next) {
+                next.style.display = '';
+            }
+        });
+    });
+
+    [...box1s].forEach(node => {
+        node.addEventListener('mouseleave', (e) => {
+            const self = e.currentTarget;
+            const prev = self.previousElementSibling;
+
+            if (self) {
+                self.style.display = 'none';
+            }
+            if (prev) {
+                prev.style.display = '';
+            }
+        });
+    });
+
+}
+
+const createMarkerText1 = (AMap, map) => {
+    list_2d.forEach(item => {
+        item.text.forEach(tp => {
+            var text = new AMap.Text({
+                text: '1栋1单元 26.7℃',
+                angle: item.angle ?? -6,
+                style:{
+                    'background-color': 'transparent',
+                    'border-width': 0,
+                    'font-size': item.fontSize ?? '18px',
+                    'color': '#4c4c4c'
+                },
+                clickable: false,
+                zIndex: 15,
+                position: tp
+            });
+
+            allTexts.push(text);
+            text.setMap(map);
+        });
+
+        item.marker.forEach(dot => {
+            var marker = new AMap.Marker({
+                // position: new AMap.LngLat(102.637925, 37.945126),
+                position: new AMap.LngLat(...dot),
+                // anchor: 'bottom-center',
+                content: `<div class="floor-marker">
+                        <div class="floor-marker-box">
+                            <div class="floor-marker-box-header">单元号: 2103</div>
+                            <div class="floor-marker-box-body">
+                                <div>阀位: 52%</div>
+                                <div>回温: 37.9℃</div>
+                                <div>流量: 60.4t/h</div>
+                            </div>
+                        </div><div class="floor-marker-box1" style="display: none;">
+                            <div class="floor-marker-box1-header">单元号: 2103</div>
+                            <div class="floor-marker-box1-body">
+                                <div>阀位: 52%</div>
+                                <div>回温: 37.9℃</div>
+                                <div>流量: 60.4t/h</div>
+                            </div>
+                        </div>
+                        <div class="floor-marker-dot"></div>
+                        <div class="floor-marker-line"></div>
+                        <img class="floor-marker-img" src=${marker1} />
+                    </div>`,
+                offset: new AMap.Pixel(0, -40),
+                zIndex: 16,
+            });
+
+            allMarker1s.push(marker);
+            map.add(marker);
+        });
+    });
+
+    const markers = document.querySelectorAll('.floor-marker');
+    const boxs = document.querySelectorAll('.floor-marker-box');
+    const box1s = document.querySelectorAll('.floor-marker-box1');
+
+    [...markers].forEach(node => {
+        node.addEventListener('dblclick', (e) => {
+            console.log(e)
+            alert('test...');
+        });
+    });
+
+    [...boxs].forEach(node => {
+        node.addEventListener('mousemove', (e) => {
+            const self = e.currentTarget;
+            const next = self.nextSibling;
+
+            if (self) {
+                self.style.display = 'none';
+            }
+            if (next) {
+                next.style.display = '';
+            }
+        });
+    });
+
+    [...box1s].forEach(node => {
+        node.addEventListener('mouseleave', (e) => {
+            const self = e.currentTarget;
+            const prev = self.previousElementSibling;
+
+            if (self) {
+                self.style.display = 'none';
+            }
+            if (prev) {
+                prev.style.display = '';
+            }
+        });
+    });
+
 }
 
 const toggle = () => {
@@ -646,31 +500,120 @@ const toggle = () => {
 
     showDialog.value = current;
 
-    allMarkers.forEach(v => {
-        v.setMap(current ? $map : null);
-    });
+    if (mode.value === '1') {
+        allMarkers.forEach(v => {
+            v.setMap(current ? $map : null);
+        });
+    } else {
+        allMarker1s.forEach(v => {
+            v.setMap(current ? $map : null);
+        });
+    }
+}
+
+const changeMode = (v) => {
+    // console.log(v);
+
+    const lastValue = mode.value;
+
+    mode.value = v;
+    showDialog.value = true;
+
+    // 倾斜模式
+    if (v === '1') {
+        if (lastValue === v) {
+            return;
+        }
+
+        $map.setPitch(45);
+
+        // 清除
+        [...allMarkers, ...allMarker1s].forEach(v => {
+            v.setMap(null);
+        });
+        allTexts.forEach(v => {
+            v.setMap(null);
+        });
+
+        createMarkerText($AMap, $map);
+    }
+    // 标准模式
+    if (v === '2') {
+        if (lastValue === v) {
+            return;
+        }
+
+        $map.setPitch(10);
+
+        // 清除
+        [...allMarkers, ...allMarker1s].forEach(v => {
+            v.setMap(null);
+        });
+        allTexts.forEach(v => {
+            v.setMap(null);
+        });
+
+        createMarkerText1($AMap, $map);
+    }
 }
 </script>
 
 <style lang="scss">
 .floor-marker {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    
 
     &-box {
-        min-width: 80px;
-        padding: 6px 10px;
-        height: 80px;
+        position: absolute;
+        top: -102px;
+        left: -35px;
+        min-width: 100px;
+        min-height: 80px;
         border: 1px solid #999;
         border-radius: 10px;
         background-color: rgba(0, 0, 0, 0.5);
         color: #fff;
         font-size: 12px;
 
-        &-item {
+        &-header {
+            padding: 0 10px;
+            background-color: #3b414b;
+            line-height: 26px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        &-body {
+            padding: 6px 10px;
             line-height: 20px;
+        }
+    }
+
+    &-box1 {
+        position: absolute;
+        top: -137px;
+        left: -68px;
+        min-width: 160px;
+        min-height: 120px;
+        border: 1px solid #24a0b8;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-size: 14px;
+
+        &-header {
+            padding: 0 16px;
+            height: 36px;
+            line-height: 36px;
+            border-bottom: 1px solid #24a0b8;
+        }
+
+        &-body {
+            padding: 6px 16px;
+            line-height: 28px;
         }
     }
 
@@ -680,6 +623,7 @@ const toggle = () => {
         border-radius: 50%;
         background-color: #24e0bb;
         margin-top: -5px;
+        z-index: 2;
     }
     
     &-line {
@@ -712,12 +656,48 @@ const toggle = () => {
         font-size: 16px;
         z-index: 9;
 
+        &-left {
+            display: flex;
+            align-items: center;
+        }
+
         &-title {
-            margin-left: 20px;
-            font-size: 28px;
-            line-height: 60px;
-            margin-right: 30px;
+            margin-left: 0.5rem;
+            font-size: 1.5rem;
+            margin-right: 1.2rem;
             color: #fff;
+        }
+
+        &-info {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+
+            img {
+                width: 35px;
+                height: 27px;
+                margin-right: 10px;
+            }
+
+            &-label {
+                width: 30px;
+                margin-right: 5px;
+
+                &.small {
+                    width: 12px;
+                    margin-right: 10px;
+                }
+
+                &.large {
+                    width: 35px;
+                }
+            }
+
+            &-value {
+                font-size: 1rem;
+                margin-right: 10px;
+                font-weight: 600;
+            }
         }
 
         &-right {
@@ -728,7 +708,7 @@ const toggle = () => {
                 width: 1px;
                 height: 20px;
                 background: #333;
-                margin: 0 20px
+                margin: 0 1rem;
             }
 
             &-eye {
@@ -758,10 +738,11 @@ const toggle = () => {
             background-color: #dddddd52;
             border-radius: 12px;
             height: 24px;
-            line-height: 25px;
+            // line-height: 25px;
             color: #fff;
             display: flex;
             align-items: center;
+            font-size: 0.8rem;
 
             &.active {
                 border-color: #dff1ff;

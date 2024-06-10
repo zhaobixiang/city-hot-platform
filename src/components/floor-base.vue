@@ -1,11 +1,11 @@
 <template>
-    <div class="floor-base">
-        <floor class="floor-base-item" v-for="v in count" :key="v" :title="`${v}号楼`" :style="styleList[v - 1]" @click="onClick(v)" />
+    <div class="floor-base" :style="{ width: `${imgWidth}px`, height: `${imgHeight}px`, left: `calc(50% - ${rootLeft}px)`, bottom: `${rootBottom}px`, transform: `rotateX(${xDeg}deg)` }">
+        <floor class="floor-base-item" v-for="v in count" :key="v" :title="`${v}号楼`" :width="imgWidth" :height="imgHeight" :style="styleList[v - 1]" @click="onClick(v)" />
     </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import Floor from './floor.vue';
 
 const props = defineProps({
@@ -22,14 +22,30 @@ const props = defineProps({
 const emit = defineEmits(['change-floor']);
 
 const current = ref(props.floor);
+const radius = ref(800);
 const degList = ref([]);
+const imgWidth = ref(129);
+const imgHeight = ref(122);
+const rootLeft = ref(50);
+const rootBottom = ref(200);
+const xDeg = ref(-10);
 
 const styleList = computed(() => {
     return degList.value.map(v => {
         return {
-            transform: `rotateY(${v}deg) translateZ(700px) rotateY(${-v}deg)`
+            transform: `rotateY(${v}deg) translateZ(${radius.value}px) rotateY(${-v}deg)`
         }
     });
+});
+
+onMounted(() => {
+    resize();
+
+    window.addEventListener('resize', resize);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', resize);
 });
 
 const setDegList = (v) => {
@@ -45,6 +61,29 @@ const setDegList = (v) => {
     degList.value = res;
 }
 
+const setRadius = () => {
+    const rate = window.innerWidth / 1920;
+
+    radius.value = parseInt(1600 * rate / 2);
+}
+
+const setSize = () => {
+  const width = window.innerWidth;
+  const rate = window.innerWidth / 1920;
+
+  imgWidth.value = 129 * rate;
+  imgHeight.value = 122 * rate;
+  rootLeft.value = parseInt(50 / 130 * imgWidth.value);
+//   rootBottom.value = parseInt(rate * 200 * (window.innerWidth < 1600 ? 1.08 : 1));
+  rootBottom.value = width >= 1920 ? 200 : width >= 1680 ? 180 : 160;
+//   xDeg.value = rate * -10;
+}
+
+const resize = () => {
+    setRadius();
+    setSize();
+};
+
 const onClick = (v, prev) => {
     const last = prev ?? props.floor;
     const num = props.count;
@@ -59,6 +98,13 @@ const onClick = (v, prev) => {
             res[i] = list[i] + Math.round(deg * (num - size));
         } else {
             res[i] = list[i] - Math.round(deg * size);
+        }
+
+        // 修正正前方角度
+        if (i === v - 1) {
+            const d = Math.round(Math.abs(res[i]) / 360);
+
+            res[i] = 360 * d * (res[i] > 0 ? 1 : -1);
         }
     }
 
