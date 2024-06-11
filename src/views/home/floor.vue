@@ -12,15 +12,13 @@
             </div>
 
             <div class="home-toolbar-info">
-                <img :src="areaImg" />
                 <div class="home-toolbar-info-label">热网面积</div>
                 <div class="home-toolbar-info-value">{{ floorData.d1 }}</div>
                 <div class="home-toolbar-info-label">供热面积</div>
                 <div class="home-toolbar-info-value">{{ floorData.d2 }}</div>
             </div>
 
-            <div class="home-toolbar-info">
-                <img :src="tempImg" />
+            <div class="home-toolbar-info user">
                 <div class="home-toolbar-info-label">正常供热</div>
                 <div class="home-toolbar-info-value">{{ floorData.d3 }}</div>
                 <div class="home-toolbar-info-label small">停供</div>
@@ -29,8 +27,7 @@
                 <div class="home-toolbar-info-value">{{ floorData.d5 }}</div>
             </div>
 
-            <div class="home-toolbar-info">
-                <img :src="tempImg" />
+            <div class="home-toolbar-info temp">
                 <div class="home-toolbar-info-label">18℃以下</div>
                 <div class="home-toolbar-info-value">{{ floorData.d6 }}</div>
                 <div class="home-toolbar-info-label">18℃ -24℃</div>
@@ -86,8 +83,6 @@
 import { ref } from 'vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import backImg from "@/assets/back.png";
-import areaImg from "@/assets/area.png";
-import tempImg from "@/assets/temp.png";
 import All from './all.vue';
 import Standard from './standard.vue';
 
@@ -176,11 +171,15 @@ const changeFloor = (v) => {
         display: flex;
         align-items: center;
         font-size: 12px;
+        padding-left: 50px;
+        height: 35px;
+        background: url('@/assets/area.png') no-repeat;
 
-        img {
-            width: 35px;
-            height: 27px;
-            margin-right: 10px;
+        &.user {
+            background: url('@/assets/user.png') no-repeat;
+        }
+        &.temp {
+            background: url('@/assets/temp.png') no-repeat;
         }
 
         &-label {

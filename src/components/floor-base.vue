@@ -1,6 +1,6 @@
 <template>
     <div class="floor-base" :style="{ width: `${imgWidth}px`, height: `${imgHeight}px`, left: `calc(50% - ${rootLeft}px)`, bottom: `${rootBottom}px`, transform: `rotateX(${xDeg}deg)` }">
-        <floor class="floor-base-item" v-for="v in count" :key="v" :title="`${v}号楼`" :width="imgWidth" :height="imgHeight" :style="styleList[v - 1]" @click="onClick(v)" />
+        <floor class="floor-base-item" v-for="v in count" :key="v" :title="`${v}号楼`" :width="imgWidth" :height="imgHeight" :active="current === v" :style="styleList[v - 1]" @click="onClick(v)" />
     </div>
 </template>
 
@@ -31,9 +31,13 @@ const rootBottom = ref(200);
 const xDeg = ref(-10);
 
 const styleList = computed(() => {
-    return degList.value.map(v => {
+    return degList.value.map((v, index) => {
+        const active = current.value - 1 === index;
+        const tz = active ? radius.value - 80 : radius.value;
+
         return {
-            transform: `rotateY(${v}deg) translateZ(${radius.value}px) rotateY(${-v}deg)`
+            transform: `rotateY(${v}deg) translateZ(${tz}px) rotateY(${-v}deg) ${active ? 'scale(1.3)' : ''}`,
+            zIndex: active ? 10 : 1 
         }
     });
 });

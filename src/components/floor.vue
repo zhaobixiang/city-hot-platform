@@ -1,12 +1,13 @@
 <template>
   <div class="floor">
     <div class="floor-title">{{ title }}</div>
-    <img :src="floorImg" :style="{ width: `${width}px`, height: `${height}px` }" />
+    <img :src="active ? floorActiveImg : floorImg" :style="{ width: `${width}px`, height: `${height}px` }" />
   </div>
 </template>
 
 <script setup>
 import floorImg from "@/assets/floor.png";
+import floorActiveImg from "@/assets/floor-active.png";
 
 defineProps({
   title: {
@@ -20,6 +21,10 @@ defineProps({
   height: {
     type: [String, Number],
     default: 122
+  },
+  active: {
+    type: Boolean,
+    default: false
   }
 });
 </script>
