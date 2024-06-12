@@ -21,7 +21,7 @@
                         {{ i }}单元
                     </div>
                     <div class="standard-box-main">
-                        <house-card class="standard-box-main-card" v-for="v in 10" :key="v" :type="0" />
+                        <house-card class="standard-box-main-card" v-for="v in 10" :key="v" :type="0" @set="onSetting" />
                     </div>
                     <div class="standard-box-bg">
                         <div></div>
@@ -33,6 +33,7 @@
         </el-carousel>
     </div>
     
+    <setting-dialog ref="setting" />
   </div>
 </template>
 
@@ -40,6 +41,7 @@
 import { ref, computed } from 'vue';
 import ModeBox from '@/components/mode.vue';
 import houseCard from '@/components/house-card.vue';
+import SettingDialog from '@/components/setting-dialog.vue';
 
 import arrowLImg from "@/assets/arrowls.png";
 import arrowRImg from "@/assets/arrowrs.png";
@@ -57,6 +59,7 @@ const props = defineProps({
 const emit = defineEmits(['change-floor']);
 
 const carousel = ref();
+const setting = ref();
 
 // 楼数
 const floorNum = computed(() => {
@@ -73,6 +76,10 @@ const onNext = () => {
 
 const changeFloor = (v) => {
     emit('change-floor', v);
+}
+
+const onSetting = (v) => {
+    setting.value.show(v);
 }
 </script>
 

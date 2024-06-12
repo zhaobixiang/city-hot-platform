@@ -8,16 +8,18 @@
 
     <div class="all-house" :style="{ bottom: `${houseBottom}px` }">
       <div class="all-house-title">碧水兰庭 {{ floor }}号楼</div>
-      <div class="all-house-top" :style="{ height: `${houseTopHeight}px` }">
+      <!-- <div class="all-house-top" :style="{ height: `${houseTopHeight}px` }">
         <div></div>
         <div></div>
         <div></div>
+      </div> -->
+      <div class="all-house-top1">
       </div>
-      <div class="all-house-column" :style="{ height: `${houseColumnHeight}px` }">
+      <!-- <div class="all-house-column" :style="{ height: `${houseColumnHeight}px` }">
         <div v-for="u in unitNum" :key="u" :style="{ height: `${houseColumnImgHeight}px`, lineHeight: `${houseColumnImgHeight}px` }">
           {{ `${u}单元` }}
         </div>
-      </div>
+      </div> -->
       <div class="all-house-body">
         <div
           class="all-house-unit"
@@ -344,6 +346,13 @@ const onNext = () => {
                 background: url("@/assets/wdr.png") no-repeat;
                 background-size: 100% 100%;
             }
+        }
+
+        &-top1 {
+          width: 500px;
+          height: 80px;
+          background: url('@/assets/house-top.png') no-repeat;
+          background-size: 100% 100%;
         }
 
         &-column {

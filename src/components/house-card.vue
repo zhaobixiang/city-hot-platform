@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, defineEmits } from 'vue';
 import icon1Img from "@/assets/c-icon1.png";
 import icon2Img from "@/assets/c-icon2.png";
 import icon3Img from "@/assets/c-icon3.png";
@@ -74,7 +74,9 @@ const props = defineProps({
     type: Number,
     default: 0
   }
-})
+});
+
+const emit = defineEmits(['set']);
 
 const houseCls = computed(() => {
   return ['', 'grey', 'blue', 'red'][props.type];
@@ -89,7 +91,8 @@ const progressImg = computed(() => {
 });
 
 const onSetting = () => {
-  alert('test...');
+  // alert('test...');
+  emit('set', {});
 }
 
 </script>

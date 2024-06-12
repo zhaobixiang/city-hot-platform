@@ -92,6 +92,7 @@
         </div>
         <div id="map"></div>
         
+        <marker-info ref="markerPopover" />
         <!-- <div class="home-mask"></div> -->
     </div>
 </template>
@@ -100,6 +101,7 @@
 import { ref, onMounted } from 'vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
+import MarkerInfo from '@/components/marker-info.vue';
 import eyeImg from '@/assets/eye.png';
 import marker1 from '@/assets/marker1.png';
 import marker2 from '@/assets/marker2.png';
@@ -113,6 +115,7 @@ const emit = defineEmits(['go-floor']);
 let $AMap, $map, $loca;
 const mode = ref('1');
 const showDialog = ref(true);
+const markerPopover = ref();
 const allMarkers = [];
 const allMarker1s = [];
 const allTexts = [];
@@ -357,14 +360,14 @@ const createMarkerText = (AMap, map) => {
         });
     });
 
-    const markers = document.querySelectorAll('.floor-marker');
+    const markers = document.querySelectorAll('.floor-marker-img');
     const boxs = document.querySelectorAll('.floor-marker-box');
     const box1s = document.querySelectorAll('.floor-marker-box1');
 
     [...markers].forEach(node => {
         node.addEventListener('dblclick', (e) => {
             console.log(e)
-            alert('test...');
+            markerPopover.value.show({ x: e.x, y: e.y });
         });
     });
 
@@ -454,14 +457,14 @@ const createMarkerText1 = (AMap, map) => {
         });
     });
 
-    const markers = document.querySelectorAll('.floor-marker');
+    const markers = document.querySelectorAll('.floor-marker-img');
     const boxs = document.querySelectorAll('.floor-marker-box');
     const box1s = document.querySelectorAll('.floor-marker-box1');
 
     [...markers].forEach(node => {
         node.addEventListener('dblclick', (e) => {
             console.log(e)
-            alert('test...');
+            markerPopover.value.show({ x: e.x, y: e.y });
         });
     });
 
@@ -565,7 +568,6 @@ const changeMode = (v) => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
 
     &-box {
         position: absolute;
