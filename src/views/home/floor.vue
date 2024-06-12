@@ -147,6 +147,7 @@ const changeFloor = (v) => {
         display: flex;
         align-items: center;
         font-size: 1rem;
+        cursor: pointer;
 
         img {
             width: 19px;

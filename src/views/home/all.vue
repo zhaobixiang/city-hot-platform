@@ -8,18 +8,13 @@
 
     <div class="all-house" :style="{ bottom: `${houseBottom}px` }">
       <div class="all-house-title">碧水兰庭 {{ floor }}号楼</div>
-      <!-- <div class="all-house-top" :style="{ height: `${houseTopHeight}px` }">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div> -->
-      <div class="all-house-top1">
-      </div>
-      <!-- <div class="all-house-column" :style="{ height: `${houseColumnHeight}px` }">
-        <div v-for="u in unitNum" :key="u" :style="{ height: `${houseColumnImgHeight}px`, lineHeight: `${houseColumnImgHeight}px` }">
-          {{ `${u}单元` }}
+      <div class="all-house-top" :style="{ width: `calc(100% + ${houseTopRepair}px)`, marginLeft: `-${houseTopRepair / 2}px` }">
+        <div class="all-house-top-column">
+          <div v-for="u in unitNum" :key="u">
+            {{ `${u}单元` }}
+          </div>
         </div>
-      </div> -->
+      </div>
       <div class="all-house-body">
         <div
           class="all-house-unit"
@@ -133,7 +128,7 @@ const tagLeft = ref(14);
 const doorWidth = ref(58);
 const doorHeight = ref(46);
 
-const houseTopHeight = ref(86);
+const houseTopRepair = ref(32);
 const houseColumnHeight = ref(50);
 const houseColumnImgHeight = ref(40);
 const houseLeft = ref(46);
@@ -186,7 +181,7 @@ const resize = () => {
 
     const rate = window.innerWidth / 1920;
 
-    houseTopHeight.value = parseInt(rate * 86);
+    houseTopRepair.value = parseInt(rate * 32);
     houseColumnHeight.value = parseInt(rate * 50);
     houseColumnImgHeight.value = parseInt(rate * 40);
     houseBottom.value = Math.round(rate * 230);
@@ -236,6 +231,7 @@ const onNext = () => {
         top: 47%;
         width: 28px;
         height: 30px;
+        cursor: pointer;
 
         &.left {
             left: 12%;
@@ -324,55 +320,61 @@ const onNext = () => {
         }
 
         &-top {
-            display: flex;
-            height: 86px;
-
-            div:nth-child(1) {
-                width: 102px;
-                // height: 86px;
-                background: url("@/assets/wdl.png") no-repeat;
-                background-size: 100% 100%;
-            }
-            div:nth-child(2) {
-                flex: 1;
-                // height: 86px;
-                margin: 0 -1px;
-                background: url("@/assets/wdm.png");
-                background-size: 100% 100%;
-            }
-            div:nth-child(3) {
-                width: 108px;
-                // height: 86px;
-                background: url("@/assets/wdr.png") no-repeat;
-                background-size: 100% 100%;
-            }
-        }
-
-        &-top1 {
-          width: 500px;
-          height: 80px;
+          position: relative;
+          width: calc(100% + 32px);
+          height: 84px;
           background: url('@/assets/house-top.png') no-repeat;
           background-size: 100% 100%;
-        }
+          margin-left: -16px;
+          margin-bottom: -10px;
+          z-index: 2;
 
-        &-column {
-            background-color: #c6d3d4;
-            border: 5px solid #000;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
+          &-column {
+              display: flex;
+              align-items: center;
+              justify-content: space-around;
 
-        div {
-            width: 120px;
-            height: 40px;
-            line-height: 40px;
-            background: url("@/assets/unit-bg.png") center no-repeat;
-            background-size: 100% 100%;
-            text-align: center;
-            color: #fff;
-            font-size: 16px;
-        }
+            div {
+              position: relative;
+                width: 60px;
+                height: 20px;
+                line-height: 20px;
+                background: url("@/assets/unit-bg.png") center no-repeat;
+                background-size: 100% 100%;
+                text-align: center;
+                color: #fff;
+                font-size: 12px;
+
+                &:nth-child(1) {
+                  top: 57px;
+                }
+                &:nth-child(2) {
+                  top: 53px;
+                }
+                &:nth-child(3) {
+                  top: 47px;
+                }
+            }
+          }
+
+        // &-column {
+        //     background-color: #c6d3d4;
+        //     border: 5px solid #000;
+        //     height: 50px;
+        //     display: flex;
+        //     align-items: center;
+        //     justify-content: space-around;
+
+        // div {
+        //     width: 120px;
+        //     height: 40px;
+        //     line-height: 40px;
+        //     background: url("@/assets/unit-bg.png") center no-repeat;
+        //     background-size: 100% 100%;
+        //     text-align: center;
+        //     color: #fff;
+        //     font-size: 16px;
+        // }
     }
 
     &-body {

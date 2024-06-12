@@ -7,21 +7,21 @@
           <div class="dialog-setting-body-item">
             <div class="dialog-setting-body-item-label">室温设置</div>
             <div class="dialog-setting-body-item-value">
-              <el-input v-model="s1" style="width: 120px" />
+              <el-input v-model="s1" style="width: 140px" />
             </div>
             <div class="dialog-setting-body-item-unit">(℃)</div>
           </div>
           <div class="dialog-setting-body-item">
             <div class="dialog-setting-body-item-label">回温设置</div>
             <div class="dialog-setting-body-item-value">
-              <el-input v-model="s2" style="width: 120px" />
+              <el-input v-model="s2" style="width: 140px" />
             </div>
             <div class="dialog-setting-body-item-unit">(℃)</div>
           </div>
           <div class="dialog-setting-body-item">
             <div class="dialog-setting-body-item-label">阀位设置</div>
             <div class="dialog-setting-body-item-value">
-              <el-input v-model="s3" style="width: 120px" />
+              <el-input v-model="s3" style="width: 140px" />
             </div>
             <div class="dialog-setting-body-item-unit">(%)</div>
           </div>
@@ -96,10 +96,11 @@ defineExpose({
         padding-top: 20px;
         height: 40px;
         line-height: 40px;
-        color: #fff;
-        font-size: 20px;
+        color: #01e3df;
+        font-size: 14px;
         text-align: center;
         margin-left: -30px;
+        letter-spacing: 2px;
       }
 
       &-body {
@@ -116,18 +117,32 @@ defineExpose({
           }
 
           &-label {
-            width: 70px;
+            width: 64px;
           }
 
           &-value {
-            // background: url('@/assets/');
-            margin: 0 10px 0 14px;
+            background: url('@/assets/input.png') no-repeat;
+            margin: 0 6px 0 8px;
+            
+            :deep(.el-input__wrapper) {
+              background-color: transparent;
+              box-shadow: none;
+              border-radius: 0;
+            }
+            :deep(.el-input__wrapper) {
+              padding: 0 10px;
+            }
+            :deep(.el-input__inner) {
+              height: 28px;
+              line-height: 28px;
+              color: #fff;
+            }
           }
         }
       }
 
       &-footer {
-        width: 230px;
+        width: 222px;
         text-align: center;
         height: 60px;
         line-height: 48px;

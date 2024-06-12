@@ -1,10 +1,10 @@
 <template>
     <div class="marker" v-show="visible" :style="{ top: `${top}px`, left: `${left}px` }">
         <div class="marker-close" @click="hide"></div>
-        <div class="marker-title">2103信息</div>
+        <div class="marker-title">2103 信 息</div>
 
-        <div class="marker-box first">
-            <div class="marker-box-left"></div>
+        <div class="marker-box">
+            <div class="marker-box-left">阀门数据</div>
             <div class="marker-box-right">
                 <div class="marker-box-right-item">
                     <div class="marker-box-right-item-label">阀门开度:</div>
@@ -22,7 +22,7 @@
         </div>
 
         <div class="marker-box">
-            <div class="marker-box-left"></div>
+            <div class="marker-box-left">户表数据</div>
             <div class="marker-box-right">
                 <div class="marker-box-right-item">
                     <div class="marker-box-right-item-label">供水温度:</div>
@@ -96,26 +96,26 @@ defineExpose({
         padding-top: 12px;
         height: 38px;
         line-height: 38px;
-        color: #fff;
-        font-size: 20px;
+        color: #01e3df;
+        font-size: 14px;
         text-align: center;
     }
 
     &-box {
         display: flex;
         align-items: center;
-        margin-top: 12px;
-        margin-left: 12px;
-
-        &.first {
-            margin-bottom: 24px;
-        }
+        margin-left: 20px;
 
         &-left {
-            width: 100px;
-            height: 60px;
+            width: 70px;
+            height: 100px;
             flex-shrink: 0;
-            background: url('@/assets/marker1.png') center no-repeat;
+            background: url('@/assets/battery.png') center no-repeat;
+            color: #fff;
+            writing-mode: vertical-rl;
+            text-align: center;
+            font-size: 12px;
+            line-height: 70px;
         }
 
         &-right {

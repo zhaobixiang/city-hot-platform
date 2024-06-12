@@ -108,6 +108,7 @@ const onSetting = (v) => {
         color: #fff;
         border-radius: 5px;
         text-align: center;
+        cursor: pointer;
 
         &.left {
             left: 30px;

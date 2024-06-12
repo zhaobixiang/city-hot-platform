@@ -605,6 +605,7 @@ const changeMode = (v) => {
         background-color: rgba(0, 0, 0, 0.5);
         color: #fff;
         font-size: 14px;
+        z-index: 99;
 
         &-header {
             padding: 0 16px;
