@@ -276,6 +276,7 @@ onMounted(() => {
         // console.log(feat)
 
         if (feat) {
+          window.$('.floor-marker-box1').remove();
           emit('go-floor');
         }
       });
