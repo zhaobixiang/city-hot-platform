@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -26,24 +27,23 @@ html, body {
   margin-bottom: 10px;
 }
 
-
 ::-webkit-scrollbar {
   width: 2px;
 }
- 
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
- 
+
 ::-webkit-scrollbar-thumb {
-  background: #999; 
+  background: #999;
 }
 
 @media only screen and (max-width: 1600px) and (min-width: 1280px) {
   html {
     font-size: 14px;
   }
-} 
+}
 
 @media only screen and (max-width: 1280px) and (min-width: 960px) {
   html {
@@ -55,4 +55,4 @@ html, body {
   html {
     font-size: 10px;
   }
-} 
+}

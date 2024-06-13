@@ -10,7 +10,7 @@ import Home from '@/views/home/index.vue';
 
 <style lang="scss" scoped>
 .app {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 </style>

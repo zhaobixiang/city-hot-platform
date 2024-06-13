@@ -40,10 +40,9 @@
           <div class="house-main-info-item-label">回水温度</div>
           <div class="house-main-info-item-value">45℃</div>
         </div>
-
       </div>
       <div class="house-main-bottom">
-        <div class="house-main-bottom-text">阀门开度  86%</div>
+        <div class="house-main-bottom-text">阀门开度 86%</div>
         <img :src="progressImg" />
       </div>
     </div>
@@ -52,28 +51,28 @@
 
 <script setup>
 import { computed, ref, defineEmits } from 'vue';
-import icon1Img from "@/assets/c-icon1.png";
-import icon2Img from "@/assets/c-icon2.png";
-import icon3Img from "@/assets/c-icon3.png";
-import icon4Img from "@/assets/c-icon4.png";
-import icon5Img from "@/assets/c-icon5.png";
-import icon6Img from "@/assets/c-icon6.png";
+import icon1Img from '@/assets/c-icon1.png';
+import icon2Img from '@/assets/c-icon2.png';
+import icon3Img from '@/assets/c-icon3.png';
+import icon4Img from '@/assets/c-icon4.png';
+import icon5Img from '@/assets/c-icon5.png';
+import icon6Img from '@/assets/c-icon6.png';
 
-import house1Img from "@/assets/house1.png";
-import house2Img from "@/assets/house2.png";
-import house3Img from "@/assets/house3.png";
-import house4Img from "@/assets/house4.png";
+import house1Img from '@/assets/house1.png';
+import house2Img from '@/assets/house2.png';
+import house3Img from '@/assets/house3.png';
+import house4Img from '@/assets/house4.png';
 
-import progress1Img from "@/assets/progress1.png";
-import progress2Img from "@/assets/progress2.png";
-import progress3Img from "@/assets/progress3.png";
-import progress4Img from "@/assets/progress4.png";
+import progress1Img from '@/assets/progress1.png';
+import progress2Img from '@/assets/progress2.png';
+import progress3Img from '@/assets/progress3.png';
+import progress4Img from '@/assets/progress4.png';
 
 const props = defineProps({
   type: {
     type: Number,
-    default: 0
-  }
+    default: 0,
+  },
 });
 
 const emit = defineEmits(['set']);
@@ -93,8 +92,7 @@ const progressImg = computed(() => {
 const onSetting = () => {
   // alert('test...');
   emit('set', {});
-}
-
+};
 </script>
 
 <style lang="scss" scoped>
@@ -133,7 +131,7 @@ const onSetting = () => {
       padding: 2px;
       margin: 0 4px;
     }
-    
+
     img {
       width: 28px;
       height: 22px;
@@ -173,7 +171,7 @@ const onSetting = () => {
           }
         }
       }
-      
+
       &-right {
         flex: 1;
         display: flex;
@@ -182,7 +180,7 @@ const onSetting = () => {
         justify-content: center;
         // background: url('@/assets/house1.png') center no-repeat;
         // background-size: 90% 90%;
-        
+
         div {
           font-size: 12px;
           color: #fff;
@@ -193,7 +191,7 @@ const onSetting = () => {
             font-weight: 600;
           }
         }
-        
+
         img {
           position: absolute;
           width: 75px;

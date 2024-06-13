@@ -2,11 +2,12 @@
   "name": "city-hot-platform",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint --ext .vue,.js src --fix",
+    "format": "prettier --write ./**/*.{vue,ts,tsx,js,jsx,css,less,scss,json,md}"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
@@ -16,6 +17,11 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
+    "eslint": "^8.15.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^9.0.1",
+    "prettier": "^2.6.2",
     "sass": "^1.77.4",
     "vite": "^5.2.0"
   }
