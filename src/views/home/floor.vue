@@ -57,7 +57,7 @@
 
         <el-dropdown @command="changeMode">
           <div class="home-toolbar-select active">
-            {{ mode === 'all' ? '总览模式' : '标准模式' }}
+            {{ modeMap[mode] }}
 
             <el-icon class="home-toolbar-select-icon">
               <arrow-down />
@@ -68,6 +68,7 @@
             <el-dropdown-menu>
               <el-dropdown-item command="all">总览模式</el-dropdown-item>
               <el-dropdown-item command="standard">标准模式</el-dropdown-item>
+              <el-dropdown-item command="easy">极简模式</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -86,6 +87,12 @@
       :data="floorData"
       @change-floor="changeFloor"
     />
+    <easy
+      v-show="mode === 'easy'"
+      :floor="floor"
+      :data="floorData"
+      @change-floor="changeFloor"
+    />
   </div>
 </template>
 
@@ -95,9 +102,15 @@ import { ArrowDown } from '@element-plus/icons-vue';
 import backImg from '@/assets/back.png';
 import All from './all.vue';
 import Standard from './standard.vue';
+import Easy from './easy.vue';
 
 const emit = defineEmits(['hide']);
 
+const modeMap = {
+  all: '总览模式',
+  standard: '标准模式',
+  easy: '极简模式'
+};
 const mode = ref('all');
 const floor = ref(1);
 
@@ -111,7 +124,7 @@ const floorData = ref({
   d7: '127户',
   d8: '22户',
   total: 14, // 楼数量
-  layer: 10, // 层数
+  layer: 9, // 层数
   unit: 3, // 单元数
   door: 4, // 户数
 });
@@ -131,8 +144,8 @@ const floorData = ref({
 //   door: 4, // 户数
 // });
 
-const changeMode = () => {
-  mode.value = mode.value === 'all' ? 'standard' : 'all';
+const changeMode = (v) => {
+  mode.value = v;
 };
 
 const changeFloor = (v) => {

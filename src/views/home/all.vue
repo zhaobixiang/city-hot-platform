@@ -5,20 +5,7 @@
     <img class="all-arrow right" :src="arrowLImg" @click="onNext" />
 
     <mode-box />
-
-
-    <div class="all-marker" v-show="showMarker" :style="{ left: `${markerLeft}px`, top: `${markerTop}px` }">
-      <!-- <div class="all-marker-arrow"></div> -->
-      <div class="all-marker-close" @click="showMarker = false">
-        <svg t="1718319645381" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1453" width="12" height="12"><path d="M562.9 513.3l266-266c14.1-14.1 14.1-36.9 0-50.9-14.1-14.1-36.9-14.1-50.9 0l-266 266-266-266c-14.1-14.1-36.9-14.1-50.9 0-14.1 14.1-14.1 36.9 0 50.9l266 266-265.6 265.6c-14.1 14.1-14.1 36.9 0 50.9 7 7 16.2 10.5 25.5 10.5s18.4-3.5 25.5-10.5L512 564.2l265.6 265.6c7 7 16.2 10.5 25.5 10.5s18.4-3.5 25.5-10.5c14.1-14.1 14.1-36.9 0-50.9L562.9 513.3z" p-id="1454" fill="#ffffff"></path></svg>
-      </div>
-      <div class="all-marker-header">单元号: 2103</div>
-      <div class="all-marker-body">
-          <div>阀位: 52%</div>
-          <div>回温: 37.9℃</div>
-          <div>流量: 60.4t/h</div>
-      </div>
-    </div>
+    <house-info ref="houseInfo" />
 
     <div class="all-house" :style="{ bottom: `${houseBottom}px`, left: `${houseLeft}px` }">
       <div class="all-house-title">碧水兰庭 {{ floor }}号楼</div>
@@ -142,6 +129,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import ModeBox from '@/components/mode.vue';
 import House from '@/components/house.vue';
 import FloorBase from '@/components/floor-base.vue';
+import HouseInfo from './house-info.vue';
 import arrowLImg from '@/assets/arrow-l.png';
 import arrowRImg from '@/assets/arrow-r.png';
 
@@ -169,9 +157,7 @@ const houseTopHeight = ref(84);
 const houseLeft = ref(595);
 const houseBottom = ref(230);
 
-const showMarker = ref(false);
-const markerLeft = ref(0);
-const markerTop = ref(0);
+const houseInfo = ref();
 
 // 楼数
 const floorNum = computed(() => {
@@ -226,7 +212,7 @@ const setDoorSize = () => {
   const totalW = (w * doorNum.value + (5 * doorNum.value + 1)) * unitNum.value + 10 * (unitNum.value - 1);
   houseLeft.value = parseInt((window.innerWidth - totalW) / 2);
 
-  console.log(houseLeft.value)
+  // console.log(houseLeft.value)
 };
 
 const resize = () => {
@@ -266,9 +252,14 @@ const onNext = () => {
 
 const showHouseInfo = (e) => {
   // console.log(e)
-  showMarker.value = true;
-  markerLeft.value = e.x;
-  markerTop.value = e.y;
+  houseInfo.value.show({
+    x: e.x,
+    y: e.y,
+    unit: '1601',
+    d1: '52%',
+    d2: '37.9',
+    d3: '60.4'
+  });
 }
 </script>
 
@@ -464,62 +455,5 @@ const showHouseInfo = (e) => {
       }
     }
   }
-}
-
-.all-marker {
-  width: 120px;
-  height: 96px;
-  position: absolute;
-  left: 0;
-  top: 0;
-
-  z-index: 99;
-
-  border: 1px solid #999;
-  border-radius: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  font-size: 12px;
-
-  &-close {
-    position: absolute;
-    right: 4px;
-    top: 4px;
-    cursor: pointer;
-  }
-
-    &-header {
-      padding: 0 10px;
-      background-color: #3b414b;
-      line-height: 26px;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-    }
-
-    &-body {
-      padding: 6px 10px;
-      line-height: 20px;
-    }
-
-    &-arrow {
-      position: absolute;
-      left: 50%;
-      bottom: -1px;
-      width: 10px;
-      height: 10px;
-
-      &:after {
-        content: ' ';
-        display: inline-block;
-        width: 5px;
-        height: 5px;
-        transform: rotate(45deg);
-        // background-color: #fff;
-        background-color: rgba(0, 0, 0, 0.5);
-        border-bottom: 1px solid #999;
-        border-right: 1px solid #999;
-      }
-      
-    }
 }
 </style>

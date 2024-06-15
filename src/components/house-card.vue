@@ -14,31 +14,31 @@
         <div class="house-main-top-left">
           <div class="house-main-top-left-item">
             <span>室内:</span>
-            <span>23℃</span>
+            <span>{{ data.t1 }}℃</span>
           </div>
           <div class="house-main-top-left-item">
             <span>设置:</span>
-            <span>24℃</span>
+            <span>{{ data.t2 }}℃</span>
           </div>
         </div>
         <div class="house-main-top-right">
-          <div>1601室</div>
-          <div>145㎡</div>
+          <div>{{ data.name }}</div>
+          <div>{{ data.area }}</div>
           <img :src="houseImg" />
         </div>
       </div>
       <div class="house-main-info">
         <div class="house-main-info-item">
           <div class="house-main-info-item-label">供水温度</div>
-          <div class="house-main-info-item-value">45℃</div>
+          <div class="house-main-info-item-value">{{ data.d1 }}℃</div>
         </div>
         <div class="house-main-info-item">
           <div class="house-main-info-item-label">瞬时流量</div>
-          <div class="house-main-info-item-value">60.4t/h</div>
+          <div class="house-main-info-item-value">{{ data.d2 }}</div>
         </div>
         <div class="house-main-info-item">
           <div class="house-main-info-item-label">回水温度</div>
-          <div class="house-main-info-item-value">45℃</div>
+          <div class="house-main-info-item-value">{{ data.d3 }}℃</div>
         </div>
       </div>
       <div class="house-main-bottom">
@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { computed, ref, defineEmits } from 'vue';
+import { computed } from 'vue';
 import icon1Img from '@/assets/c-icon1.png';
 import icon2Img from '@/assets/c-icon2.png';
 import icon3Img from '@/assets/c-icon3.png';
@@ -69,24 +69,36 @@ import progress3Img from '@/assets/progress3.png';
 import progress4Img from '@/assets/progress4.png';
 
 const props = defineProps({
-  type: {
-    type: Number,
-    default: 0,
+  data: {
+    type: Object,
+    default: () => ({}),
   },
 });
 
 const emit = defineEmits(['set']);
 
 const houseCls = computed(() => {
-  return ['', 'grey', 'blue', 'red'][props.type];
+  const t = props.data.t1;
+
+    return {
+      blue: t && t < 16,
+      red: t && t > 40,
+      grey: !t
+    }
 });
 
 const houseImg = computed(() => {
-  return [house1Img, house2Img, house3Img, house4Img][props.type];
+  const t = props.data.t1;
+  const index = !t ? 1 : t < 16 ? 2 : t > 40 ? 3 : 0;
+
+  return [house1Img, house2Img, house3Img, house4Img][index];
 });
 
 const progressImg = computed(() => {
-  return [progress1Img, progress2Img, progress3Img, progress4Img][props.type];
+  const t = props.data.t1;
+  const index = !t ? 1 : t < 16 ? 2 : t > 40 ? 3 : 0;
+
+  return [progress1Img, progress2Img, progress3Img, progress4Img][index];
 });
 
 const onSetting = () => {

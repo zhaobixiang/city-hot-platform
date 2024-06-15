@@ -1,24 +1,26 @@
 <template>
-  <div class="standard">
+  <div class="easy">
     <mode-box
-      mode="standard"
+      mode="easy"
       :count="floorNum"
       :floor="floor"
       @change-floor="changeFloor"
     />
-    <div class="standard-title">碧水兰庭</div>
+    <div class="easy-title">碧水兰庭</div>
 
-    <div class="standard-arrow left" v-show="carouselList.length > 1" @click="onPrev">
+    <house-info ref="houseInfo" />
+
+    <div class="easy-arrow left" v-show="carouselList.length > 1" @click="onPrev">
       <img :src="arrowRImg" />
       更多
     </div>
 
-    <div class="standard-arrow right" v-show="carouselList.length > 1" @click="onNext">
+    <div class="easy-arrow right" v-show="carouselList.length > 1" @click="onNext">
       <img :src="arrowLImg" />
       更多
     </div>
 
-    <div class="standard-main">
+    <div class="easy-main">
       <el-carousel
         ref="carousel"
         height="calc(100vh - 170px)"
@@ -26,22 +28,24 @@
         indicator-position="none"
         arrow="never"
       >
-        <el-carousel-item v-for="(carousel, index) in carouselList" :key="index">
-          <div v-for="item in carousel" :key="item.name" class="standard-box">
-            <div class="standard-box-header">{{ item.name }}</div>
-            <div class="standard-box-main">
-              <div class="standard-box-layer" v-for="(layer, lidx) in item.children" :key="lidx">
-                <house-card
-                  v-for="(house, idx) in layer"
-                  :key="idx"
-                  class="standard-box-layer-card"
-                  :type="0"
-                  :data="house"
-                  @set="onSetting"
-                />
+        <el-carousel-item
+          v-for="(carousel, index) in carouselList"
+          :key="index"
+        >
+          <div v-for="item in carousel" :key="item.name" class="easy-box">
+            <div class="easy-box-header">{{ item.name }}</div>
+            <div class="easy-box-main">
+              <div
+                class="easy-box-layer"
+                v-for="(layer, lidx) in item.children"
+                :key="lidx"
+              >
+                <div v-for="(house, idx) in layer" :key="idx" class="easy-box-layer-card" :class="getHouseCls(house)" @dblclick="showHouseInfo">
+                    {{ house.name }}
+                </div>
               </div>
             </div>
-            <div class="standard-box-bg">
+            <div class="easy-box-bg">
               <div></div>
               <div></div>
               <div></div>
@@ -50,20 +54,15 @@
         </el-carousel-item>
       </el-carousel>
     </div>
-
-    <setting-dialog ref="setting" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import ModeBox from '@/components/mode.vue';
-import houseCard from '@/components/house-card.vue';
-import SettingDialog from '@/components/setting-dialog.vue';
-
 import arrowLImg from '@/assets/arrowls.png';
 import arrowRImg from '@/assets/arrowrs.png';
-
+import HouseInfo from './house-info.vue';
 import { standardData } from './standard-data.js';
 
 const props = defineProps({
@@ -79,8 +78,8 @@ const props = defineProps({
 const emit = defineEmits(['change-floor']);
 
 const carousel = ref();
-const setting = ref();
 const carouselList = ref([]);
+const houseInfo = ref();
 
 // 楼数
 const floorNum = computed(() => {
@@ -109,7 +108,7 @@ const getCarouselList = () => {
   for (let i = 0; i < standardData.length; i++) {
     const num = standardData[i].num;
 
-    total += 220 * num + 11;
+    total += 104 * num + 11;
 
     if (total <= w) {
       layer.push(standardData[i]);
@@ -117,31 +116,47 @@ const getCarouselList = () => {
     } else {
       total = 0;
       res.push(layer);
-      layer = [
-        standardData[i]
-      ];
+      layer = [standardData[i]];
     }
   }
 
   if (layer.length) {
-    res.push(layer)
+    res.push(layer);
   }
 
-  // console.log(res)
+//   console.log(res);
   carouselList.value = res;
+};
+
+const getHouseCls = (house) => {
+    const t = house.t1;
+
+    return {
+        blue: t && t < 16,
+        red: t && t > 40,
+        grey: !t
+    }
 }
 
 const changeFloor = (v) => {
   emit('change-floor', v);
 };
 
-const onSetting = (v) => {
-  setting.value.show(v);
-};
+const showHouseInfo = (e) => {
+//   console.log(e)
+  houseInfo.value.show({
+    x: e.x,
+    y: e.y - 60,
+    unit: '1601',
+    d1: '52%',
+    d2: '37.9',
+    d3: '60.4'
+  });
+}
 </script>
 
 <style lang="scss" scoped>
-.standard {
+.easy {
   width: 100%;
   height: 100%;
   margin-top: 60px;
@@ -265,6 +280,23 @@ const onSetting = (v) => {
 
       &-card {
         margin: 0 5px 10px 5px;
+        width: 104px;
+        height: 37px;
+        line-height: 37px;
+        background: url('@/assets/house_box1.png');
+        text-align: center;
+        color: #fff;
+        cursor: pointer;
+
+        &.grey {
+            background: url('@/assets/house_box2.png');
+        }
+        &.blue {
+            background: url('@/assets/house_box3.png');
+        }
+        &.red {
+            background: url('@/assets/house_box4.png');
+        }
       }
     }
   }

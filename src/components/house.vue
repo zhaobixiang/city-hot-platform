@@ -43,6 +43,7 @@ const bgColor = computed(() => {
   // width: 200px;
   width: v-bind(w);
   height: v-bind(h);
+  cursor: pointer;
 
   &-top {
     position: relative;
